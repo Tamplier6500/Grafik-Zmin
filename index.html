@@ -82,6 +82,7 @@
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
       margin: 0;
       padding: 0;
     }
@@ -92,6 +93,11 @@
       background: var(--header-bg);
       color: var(--text);
       overflow: hidden;
+    }
+
+    input, textarea, select {
+      -webkit-touch-callout: default;
+      user-select: text;
     }
 
     /* Clean Top Bar */
@@ -273,7 +279,8 @@
       min-height: 54px;
       border-bottom: 1px solid var(--border);
       background: var(--surface);
-      transition: background 0.15s;
+      transition: background 0.12s;
+      user-select: none;
     }
 
     .day-row.weekend {
@@ -297,6 +304,15 @@
       background: var(--selected-bg);
       outline: 2px solid #eab308;
       outline-offset: -2px;
+    }
+
+    .date-cell, .shift-cell {
+      transition: transform 0.12s ease, opacity 0.12s ease;
+    }
+
+    .pressing {
+      transform: scale(0.93);
+      opacity: 0.78;
     }
 
     .date-cell {
@@ -441,7 +457,7 @@
       right: 4px;
     }
 
-    /* Bottom 1-Row Navigation Bar (Completely seamless, zero bottom stripe) */
+    /* Bottom 1-Row Navigation Bar (Only <<, Month.Year, >>) */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -455,17 +471,17 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-left: 10px;
-      padding-right: 10px;
-      gap: 6px;
+      padding-left: 12px;
+      padding-right: 12px;
+      gap: 10px;
       z-index: 40;
       box-shadow: none;
     }
 
     .nav-btn {
       height: 40px;
-      min-width: 48px;
-      padding: 0 12px;
+      min-width: 58px;
+      padding: 0 14px;
       border-radius: 10px;
       border: 1px solid var(--border);
       background: var(--surface-2);
@@ -509,6 +525,7 @@
 
     .nav-center:active {
       background: var(--surface);
+      transform: scale(0.98);
     }
 
     /* Modals */
@@ -790,35 +807,33 @@
       <div class="app-title">Графік змін</div>
     </div>
     <div class="header-actions">
-      <button id="examAlertBtn" class="hdr-btn icon-only" style="display:none;" title="Найближчі екзамени" onclick="openExamAlertsModal()">
+      <button id="examAlertBtn" class="hdr-btn icon-only" style="display:none;" title="Найближчі екзамени" onclick="haptic('light'); openExamAlertsModal()">
         🔔<span id="examAlertCount" class="alert-badge">0</span>
       </button>
-      <button id="headerInstallBtn" class="hdr-btn" style="display:none;" onclick="triggerInstall()">📲</button>
-      <button id="themeHeaderBtn" class="hdr-btn icon-only" title="Змінити тему" onclick="toggleTheme()">🌙</button>
-      <button class="hdr-btn" onclick="openModal('menuModal')">☰ Меню</button>
+      <button id="headerInstallBtn" class="hdr-btn" style="display:none;" onclick="haptic('light'); triggerInstall()">📲</button>
+      <button id="themeHeaderBtn" class="hdr-btn icon-only" title="Змінити тему" onclick="haptic('light'); toggleTheme()">🌙</button>
+      <button class="hdr-btn" onclick="haptic('light'); openModal('menuModal')">☰ Меню</button>
     </div>
   </header>
 
   <!-- Fixed 6-column Table Header -->
   <div class="grid-header" role="row">
     <div>Дата</div>
-    <div id="colHdr_0" class="shift-col-hdr" onclick="openShiftNoteModal(0)"><span>А</span></div>
-    <div id="colHdr_1" class="shift-col-hdr" onclick="openShiftNoteModal(1)"><span>Б</span></div>
-    <div id="colHdr_2" class="shift-col-hdr" onclick="openShiftNoteModal(2)"><span>В</span></div>
-    <div id="colHdr_3" class="shift-col-hdr" onclick="openShiftNoteModal(3)"><span>Г</span></div>
-    <div id="colHdr_4" class="shift-col-hdr" onclick="openShiftNoteModal(4)"><span>Д</span></div>
+    <div id="colHdr_0" class="shift-col-hdr" onclick="haptic('light'); openShiftNoteModal(0)"><span>А</span></div>
+    <div id="colHdr_1" class="shift-col-hdr" onclick="haptic('light'); openShiftNoteModal(1)"><span>Б</span></div>
+    <div id="colHdr_2" class="shift-col-hdr" onclick="haptic('light'); openShiftNoteModal(2)"><span>В</span></div>
+    <div id="colHdr_3" class="shift-col-hdr" onclick="haptic('light'); openShiftNoteModal(3)"><span>Г</span></div>
+    <div id="colHdr_4" class="shift-col-hdr" onclick="haptic('light'); openShiftNoteModal(4)"><span>Д</span></div>
   </div>
 
   <!-- Scrollable Schedule Table -->
   <main id="scheduleScroll" class="schedule-scroll"></main>
 
-  <!-- Bottom 1-Row Navigation Bar -->
-  <nav class="bottom-nav" aria-label="Навігація по датах">
-    <button class="nav-btn" title="Попередній місяць" onclick="shiftMonth(-1)">&lt;&lt;</button>
-    <button class="nav-btn" title="Попередній день" onclick="shiftDay(-1)">&lt;</button>
-    <button id="monthYearBtn" class="nav-center" title="Повернутися на сьогодні" onclick="goToday()">01.2026</button>
-    <button class="nav-btn" title="Наступний день" onclick="shiftDay(1)">&gt;</button>
-    <button class="nav-btn" title="Наступний місяць" onclick="shiftMonth(1)">&gt;&gt;</button>
+  <!-- Bottom 1-Row Navigation Bar (Only <<, Month.Year, >>) -->
+  <nav class="bottom-nav" aria-label="Навігація по місяцях">
+    <button class="nav-btn" title="Попередній місяць" onclick="haptic('light'); shiftMonth(-1)">&lt;&lt;</button>
+    <button id="monthYearBtn" class="nav-center" title="Повернутися на сьогодні" onclick="haptic('medium'); goToday()">01.2026</button>
+    <button class="nav-btn" title="Наступний місяць" onclick="haptic('light'); shiftMonth(1)">&gt;&gt;</button>
   </nav>
 
   <!-- Main Menu Modal -->
@@ -826,45 +841,45 @@
     <div class="modal-card">
       <div class="modal-header">
         <span>Меню</span>
-        <button class="modal-close" onclick="closeModal('menuModal')">&times;</button>
+        <button class="modal-close" onclick="haptic('light'); closeModal('menuModal')">&times;</button>
       </div>
       <div class="modal-body">
-        <button id="menuInstallBtn" class="menu-item install-highlight" onclick="triggerInstall()">
+        <button id="menuInstallBtn" class="menu-item install-highlight" onclick="haptic('light'); triggerInstall()">
           <span>📲 Додати на головний екран (PWA)</span>
           <span>›</span>
         </button>
-        <button id="menuExamBtn" class="menu-item" style="display:none;" onclick="closeModal('menuModal'); openExamAlertsModal();">
+        <button id="menuExamBtn" class="menu-item" style="display:none;" onclick="haptic('light'); closeModal('menuModal'); openExamAlertsModal();">
           <span>🔔 Найближчі екзамени</span>
           <span id="menuExamCount">0</span>
         </button>
-        <button class="menu-item" onclick="closeModal('menuModal'); openPatternModal();">
+        <button class="menu-item" onclick="haptic('light'); closeModal('menuModal'); openPatternModal();">
           <span>⚙️ Налаштування порядку змін</span>
           <span>›</span>
         </button>
-        <button class="menu-item" onclick="closeModal('menuModal'); openBirthdaysModal();">
+        <button class="menu-item" onclick="haptic('light'); closeModal('menuModal'); openBirthdaysModal();">
           <span>🎂 Дні народження</span>
           <span>›</span>
         </button>
-        <button class="menu-item" onclick="exportBackup()">
+        <button class="menu-item" onclick="haptic('light'); exportBackup()">
           <span>💾 Експорт резервної копії (JSON)</span>
           <span>›</span>
         </button>
-        <button class="menu-item" onclick="document.getElementById('backupInput').click()">
+        <button class="menu-item" onclick="haptic('light'); document.getElementById('backupInput').click()">
           <span>📂 Відновити з копії (JSON)</span>
           <span>›</span>
         </button>
         <input id="backupInput" type="file" accept=".json" style="display:none" onchange="importBackup(event)" />
-        <div class="version-footer">Версія додатку: <b>v1.5.0</b></div>
+        <div class="version-footer">Версія додатку: <b>v1.6.0</b></div>
       </div>
     </div>
   </div>
 
-  <!-- Shift Column Note Modal (No helper hint) -->
+  <!-- Shift Column Note Modal -->
   <div id="shiftNoteModal" class="modal-backdrop" onclick="backdropClose(event, 'shiftNoteModal')">
     <div class="modal-card">
       <div class="modal-header">
         <span id="shiftNoteTitle">Примітка для Зміни А</span>
-        <button class="modal-close" onclick="closeModal('shiftNoteModal')">&times;</button>
+        <button class="modal-close" onclick="haptic('light'); closeModal('shiftNoteModal')">&times;</button>
       </div>
       <div class="modal-body">
         <div class="field-group">
@@ -873,24 +888,24 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn" onclick="clearShiftNote()">Очистити</button>
-        <button class="btn btn-primary" onclick="saveShiftNote()">Зберегти</button>
+        <button class="btn" onclick="haptic('light'); clearShiftNote()">Очистити</button>
+        <button class="btn btn-primary" onclick="haptic('success'); saveShiftNote()">Зберегти</button>
       </div>
     </div>
   </div>
 
-  <!-- Upcoming Exams Modal (Shown only when exams exist within 14 days) -->
+  <!-- Upcoming Exams Modal -->
   <div id="examAlertsModal" class="modal-backdrop" onclick="backdropClose(event, 'examAlertsModal')">
     <div class="modal-card">
       <div class="modal-header">
         <span>🔔 Найближчі екзамени</span>
-        <button class="modal-close" onclick="closeModal('examAlertsModal')">&times;</button>
+        <button class="modal-close" onclick="haptic('light'); closeModal('examAlertsModal')">&times;</button>
       </div>
       <div class="modal-body">
         <div id="examAlertsList" style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" onclick="closeModal('examAlertsModal')">Закрити</button>
+        <button class="btn btn-primary" onclick="haptic('light'); closeModal('examAlertsModal')">Закрити</button>
       </div>
     </div>
   </div>
@@ -900,7 +915,7 @@
     <div class="modal-card">
       <div class="modal-header">
         <span>Встановлення на робочий стіл</span>
-        <button class="modal-close" onclick="closeModal('installHelpModal')">&times;</button>
+        <button class="modal-close" onclick="haptic('light'); closeModal('installHelpModal')">&times;</button>
       </div>
       <div class="modal-body">
         <div id="installStatusText" class="hint-box"></div>
@@ -917,34 +932,34 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" onclick="closeModal('installHelpModal')">Зрозуміло</button>
+        <button class="btn btn-primary" onclick="haptic('light'); closeModal('installHelpModal')">Зрозуміло</button>
       </div>
     </div>
   </div>
 
-  <!-- Cell Edit Modal (Only Shift Override, Д, and Cell Note) -->
+  <!-- Cell Edit Modal (Long-press on shift cell) -->
   <div id="cellModal" class="modal-backdrop" onclick="backdropClose(event, 'cellModal')">
     <div class="modal-card">
       <div class="modal-header">
         <span id="cellModalTitle">Зміна А — 01.01.2026</span>
-        <button class="modal-close" onclick="closeModal('cellModal')">&times;</button>
+        <button class="modal-close" onclick="haptic('light'); closeModal('cellModal')">&times;</button>
       </div>
       <div class="modal-body">
         <div class="field-group">
           <div class="field-label">Номер зміни на цей день</div>
           <div id="shiftOverrideChips" class="chip-grid">
-            <div class="chip" data-val="auto" onclick="selectOverride('auto')">За графіком</div>
-            <div class="chip" data-val="1" onclick="selectOverride('1')">1</div>
-            <div class="chip" data-val="2" onclick="selectOverride('2')">2</div>
-            <div class="chip" data-val="3" onclick="selectOverride('3')">3</div>
-            <div class="chip" data-val="-" onclick="selectOverride('-')">- (Вих.)</div>
+            <div class="chip" data-val="auto" onclick="haptic('light'); selectOverride('auto')">За графіком</div>
+            <div class="chip" data-val="1" onclick="haptic('light'); selectOverride('1')">1</div>
+            <div class="chip" data-val="2" onclick="haptic('light'); selectOverride('2')">2</div>
+            <div class="chip" data-val="3" onclick="haptic('light'); selectOverride('3')">3</div>
+            <div class="chip" data-val="-" onclick="haptic('light'); selectOverride('-')">- (Вих.)</div>
           </div>
         </div>
 
         <div class="field-group">
           <div class="field-label">Додатковий день</div>
           <div class="chip-grid">
-            <div id="chipExtraD" class="chip" onclick="toggleExtraD()">Д — Додатковий день</div>
+            <div id="chipExtraD" class="chip" onclick="haptic('light'); toggleExtraD()">Д — Додатковий день</div>
           </div>
         </div>
 
@@ -954,18 +969,18 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn" onclick="clearCellData()">Очистити</button>
-        <button class="btn btn-primary" onclick="saveCellData()">Зберегти</button>
+        <button class="btn" onclick="haptic('light'); clearCellData()">Очистити</button>
+        <button class="btn btn-primary" onclick="haptic('success'); saveCellData()">Зберегти</button>
       </div>
     </div>
   </div>
 
-  <!-- Day Modal: Exams (with editable date), Holidays, Birthdays, Events -->
+  <!-- Day Modal (Long-press on date cell: Exams, Holidays, Birthdays, Events) -->
   <div id="dayModal" class="modal-backdrop" onclick="backdropClose(event, 'dayModal')">
     <div class="modal-card">
       <div class="modal-header">
         <span id="dayModalTitle">Дата: 01.01.2026</span>
-        <button class="modal-close" onclick="closeModal('dayModal')">&times;</button>
+        <button class="modal-close" onclick="haptic('light'); closeModal('dayModal')">&times;</button>
       </div>
       <div class="modal-body">
         <div id="dayHolidayBox" class="holiday-banner" style="display:none;"></div>
@@ -982,22 +997,22 @@
           <div id="dayExamsList" style="display:flex;flex-direction:column;gap:6px;margin-top:4px;"></div>
         </div>
 
-        <!-- Events on Date -->
+        <!-- Events / Notes on Date -->
         <div class="field-group">
-          <div class="field-label">Події на обрану дату</div>
+          <div class="field-label">Примітки / події на обрану дату</div>
           <div id="dayEventsList" style="display:flex;flex-direction:column;gap:6px;"></div>
         </div>
 
         <div class="field-group">
-          <div class="field-label">Додати нову подію</div>
+          <div class="field-label">Додати примітку або подію</div>
           <div style="display:flex;gap:6px;">
-            <input id="newEventInput" type="text" placeholder="Назва події..." />
-            <button class="btn btn-primary" onclick="addDayEvent()">+</button>
+            <input id="newEventInput" type="text" placeholder="Текст примітки..." />
+            <button class="btn btn-primary" onclick="haptic('success'); addDayEvent()">+</button>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn" onclick="closeModal('dayModal')">Закрити</button>
+        <button class="btn" onclick="haptic('light'); closeModal('dayModal')">Закрити</button>
       </div>
     </div>
   </div>
@@ -1007,7 +1022,7 @@
     <div class="modal-card">
       <div class="modal-header">
         <span>Налаштування порядку змін</span>
-        <button class="modal-close" onclick="closeModal('patternModal')">&times;</button>
+        <button class="modal-close" onclick="haptic('light'); closeModal('patternModal')">&times;</button>
       </div>
       <div class="modal-body">
         <div class="hint-box">
@@ -1022,18 +1037,18 @@
         <div id="shiftsConfigContainer" style="display:flex;flex-direction:column;gap:8px;"></div>
       </div>
       <div class="modal-footer">
-        <button class="btn" onclick="resetDefaultPattern()">За замовчуванням</button>
-        <button class="btn btn-primary" onclick="savePatternSettings()">Застосувати</button>
+        <button class="btn" onclick="haptic('light'); resetDefaultPattern()">За замовчуванням</button>
+        <button class="btn btn-primary" onclick="haptic('success'); savePatternSettings()">Застосувати</button>
       </div>
     </div>
   </div>
 
-  <!-- Birthdays Excel + Manual Add Modal -->
+  <!-- Birthdays Modal -->
   <div id="birthdaysModal" class="modal-backdrop" onclick="backdropClose(event, 'birthdaysModal')">
     <div class="modal-card">
       <div class="modal-header">
         <span>Дні народження</span>
-        <button class="modal-close" onclick="closeModal('birthdaysModal')">&times;</button>
+        <button class="modal-close" onclick="haptic('light'); closeModal('birthdaysModal')">&times;</button>
       </div>
       <div class="modal-body">
         <div class="shift-seq-card">
@@ -1051,7 +1066,7 @@
           </div>
           <input id="manualBdayName" type="text" placeholder="Прізвище Ім'я По батькові" />
           <input id="manualBdayPos" type="text" placeholder="Посада (необов'язково)" />
-          <button class="btn btn-primary" onclick="addManualBirthday()">Додати в список</button>
+          <button class="btn btn-primary" onclick="haptic('success'); addManualBirthday()">Додати в список</button>
         </div>
 
         <div class="hint-box">
@@ -1059,9 +1074,9 @@
         </div>
 
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn" onclick="document.getElementById('excelFileInput').click()">📥 Імпорт Excel</button>
-          <button class="btn" onclick="downloadExcelTemplate()">📄 Шаблон Excel</button>
-          <button class="btn btn-danger" onclick="clearBirthdays()">🗑 Очистити</button>
+          <button class="btn" onclick="haptic('light'); document.getElementById('excelFileInput').click()">📥 Імпорт Excel</button>
+          <button class="btn" onclick="haptic('light'); downloadExcelTemplate()">📄 Шаблон Excel</button>
+          <button class="btn btn-danger" onclick="haptic('medium'); clearBirthdays()">🗑 Очистити</button>
           <input id="excelFileInput" type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleExcelImport(event)" />
         </div>
 
@@ -1069,13 +1084,13 @@
         <div id="bdayPreviewList" style="display:flex;flex-direction:column;gap:5px;max-height:220px;overflow-y:auto;"></div>
       </div>
       <div class="modal-footer">
-        <button class="btn" onclick="closeModal('birthdaysModal')">Закрити</button>
+        <button class="btn" onclick="haptic('light'); closeModal('birthdaysModal')">Закрити</button>
       </div>
     </div>
   </div>
 
   <script>
-    const APP_VERSION = 'v1.5.0';
+    const APP_VERSION = 'v1.6.0';
     const SHIFTS = ['А', 'Б', 'В', 'Г', 'Д'];
     const EXAM_TYPES = ['ОП', 'ПБ', 'ПТЕ', 'НПАОП', 'РБ', 'ПНЯРБ'];
     const DOW_UA = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
@@ -1115,6 +1130,17 @@
     let tempCellData = { override: null, extraD: false, note: '' };
     let editingDayStr = null;
     let deferredInstallPrompt = null;
+
+    // --- Haptic Feedback Helper ---
+    function haptic(type = 'light') {
+      if (!navigator.vibrate) return;
+      try {
+        if (type === 'light') navigator.vibrate(12);
+        else if (type === 'medium') navigator.vibrate(25);
+        else if (type === 'long') navigator.vibrate(35);
+        else if (type === 'success') navigator.vibrate([15, 30, 15]);
+      } catch (e) {}
+    }
 
     // --- Ukrainian State Holidays ---
     function getOrthodoxEaster(year) {
@@ -1262,7 +1288,6 @@
         state.birthdays = [];
       }
 
-      // Migrate legacy cell-level exams to date-level exams if any existed
       Object.keys(state.cells).forEach((k) => {
         const c = state.cells[k];
         if (c && Array.isArray(c.exams) && c.exams.length) {
@@ -1408,7 +1433,7 @@
       listEl.innerHTML = alerts
         .map((a) => {
           const whenText = a.daysLeft === 0 ? 'Сьогодні' : `Через ${a.daysLeft} дн.`;
-          return `<div class="list-item" style="cursor:pointer;" onclick="closeModal('examAlertsModal'); jumpToDate('${a.iso}');">
+          return `<div class="list-item" style="cursor:pointer;" onclick="haptic('light'); closeModal('examAlertsModal'); jumpToDate('${a.iso}');">
             <span>🔔 <b>${escapeHtml(a.examName)}</b> — ${formatDisplayDate(a.iso)}</span>
             <span style="color:#d97706;font-weight:700;">${whenText}</span>
           </div>`;
@@ -1461,6 +1486,93 @@
       closeModal('shiftNoteModal');
     }
 
+    // --- Short Tap Selection & Long Press Handling ---
+    function selectRowDay(iso) {
+      selectedDateStr = iso;
+      haptic('light');
+      const container = document.getElementById('scheduleScroll');
+      if (!container) return;
+      container.querySelectorAll('.day-row.selected').forEach((el) => el.classList.remove('selected'));
+      const target = container.querySelector(`.day-row[data-date="${iso}"]`);
+      if (target) target.classList.add('selected');
+    }
+
+    let pressTimer = null;
+    let pressTriggered = false;
+    let pressStartX = 0;
+    let pressStartY = 0;
+    let pressingEl = null;
+
+    function clearPressState() {
+      if (pressTimer) {
+        clearTimeout(pressTimer);
+        pressTimer = null;
+      }
+      if (pressingEl) {
+        pressingEl.classList.remove('pressing');
+        pressingEl = null;
+      }
+    }
+
+    function bindScheduleTouchEvents() {
+      const container = document.getElementById('scheduleScroll');
+
+      container.addEventListener('pointerdown', (e) => {
+        if (e.button !== undefined && e.button !== 0) return;
+        const dateCell = e.target.closest('.date-cell');
+        const shiftCell = e.target.closest('.shift-cell');
+        const targetCell = dateCell || shiftCell;
+        if (!targetCell) return;
+
+        const row = targetCell.closest('.day-row');
+        if (!row) return;
+        const iso = row.dataset.date;
+
+        pressTriggered = false;
+        pressStartX = e.clientX;
+        pressStartY = e.clientY;
+        pressingEl = targetCell;
+        targetCell.classList.add('pressing');
+
+        pressTimer = setTimeout(() => {
+          pressTriggered = true;
+          clearPressState();
+          haptic('long');
+          selectRowDay(iso);
+
+          if (dateCell) {
+            openDayModal(iso);
+          } else if (shiftCell) {
+            const sIdx = Number(shiftCell.dataset.sidx);
+            openCellModal(iso, sIdx);
+          }
+        }, 420);
+      });
+
+      container.addEventListener('pointermove', (e) => {
+        if (!pressTimer) return;
+        if (Math.abs(e.clientX - pressStartX) > 10 || Math.abs(e.clientY - pressStartY) > 10) {
+          clearPressState();
+        }
+      });
+
+      container.addEventListener('pointerup', (e) => {
+        const wasTimerActive = Boolean(pressTimer);
+        clearPressState();
+        if (wasTimerActive && !pressTriggered) {
+          const row = e.target.closest('.day-row');
+          if (row && row.dataset.date) {
+            selectRowDay(row.dataset.date);
+          }
+        }
+      });
+
+      container.addEventListener('pointercancel', clearPressState);
+      container.addEventListener('contextmenu', (e) => {
+        if (e.target.closest('.day-row')) e.preventDefault();
+      });
+    }
+
     // --- Render Schedule ---
     function renderSchedule(scrollTargetDateStr = null) {
       renderShiftColumnHeaders();
@@ -1495,8 +1607,8 @@
 
         html += `<div class="${rowClasses.join(' ')}" data-date="${iso}">`;
 
-        // Date cell (Exams displayed right on the Date column)
-        html += `<div class="date-cell" onclick="openDayModal('${iso}')">`;
+        // Date cell
+        html += `<div class="date-cell">`;
         html += `<span class="date-num">${pad2(day)}.${pad2(viewMonth + 1)}</span>`;
         html += `<span class="date-dow">${DOW_UA[dow]}</span>`;
         if (holidayName || dayEvents.length || dayBdays.length || dayExams.length) {
@@ -1518,7 +1630,7 @@
           const val = (cellMeta && cellMeta.override) ? cellMeta.override : getScheduledShift(dObj, sIdx);
           const pillClass = val === '1' ? 's-1' : val === '2' ? 's-2' : val === '3' ? 's-3' : 's-off';
 
-          html += `<div class="shift-cell" onclick="openCellModal('${iso}', ${sIdx})">`;
+          html += `<div class="shift-cell" data-sidx="${sIdx}">`;
           if (cellMeta && cellMeta.note) {
             html += `<span class="tag-note"></span>`;
           }
@@ -1546,16 +1658,7 @@
       }
     }
 
-    // --- Bottom Bar Navigation ---
-    function shiftDay(delta) {
-      const cur = parseISODate(selectedDateStr);
-      cur.setDate(cur.getDate() + delta);
-      selectedDateStr = toISODate(cur);
-      viewYear = cur.getFullYear();
-      viewMonth = cur.getMonth();
-      renderSchedule(selectedDateStr);
-    }
-
+    // --- Bottom Bar Month Navigation ---
     function shiftMonth(delta) {
       const cur = parseISODate(selectedDateStr);
       const targetDay = cur.getDate();
@@ -1589,9 +1692,8 @@
       if (e.target.id === id) closeModal(id);
     }
 
-    // --- Cell Editor (Shift Override, Д, Note) ---
+    // --- Cell Editor ---
     function openCellModal(iso, sIdx) {
-      selectedDateStr = iso;
       editingCellKey = `${iso}_${sIdx}`;
       const existing = state.cells[editingCellKey] || { override: null, extraD: false, note: '' };
       tempCellData = {
@@ -1644,9 +1746,8 @@
       renderSchedule();
     }
 
-    // --- Day Modal (Exams with editable date + Holidays + Birthdays + Events) ---
+    // --- Day Modal ---
     function openDayModal(iso) {
-      selectedDateStr = iso;
       editingDayStr = iso;
       document.getElementById('dayModalTitle').textContent = `Дата: ${formatDisplayDate(iso)}`;
       document.getElementById('newEventInput').value = '';
@@ -1682,12 +1783,11 @@
         bBox.style.display = 'none';
       }
 
-      // Render Exam Type Chips & Active Exams List with editable date input
       const curExams = state.exams[editingDayStr] || [];
       const chipsEl = document.getElementById('dayExamsChips');
       chipsEl.innerHTML = EXAM_TYPES.map((name) => {
         const isSelected = curExams.includes(name);
-        return `<div class="chip ${isSelected ? 'active-exam' : ''}" onclick="toggleDayExam('${name}')">${name}</div>`;
+        return `<div class="chip ${isSelected ? 'active-exam' : ''}" onclick="haptic('light'); toggleDayExam('${name}')">${name}</div>`;
       }).join('');
 
       const examsListEl = document.getElementById('dayExamsList');
@@ -1699,23 +1799,22 @@
             (name, idx) => `
             <div class="list-item">
               <span class="tag-exam-date" style="font-size:11px;padding:3px 6px;">${escapeHtml(name)}</span>
-              <input type="date" value="${editingDayStr}" style="width:auto;flex:1;padding:5px 8px;font-size:13px;" onchange="moveDayExam(${idx}, this.value)" />
-              <button class="btn btn-danger" style="padding:4px 8px;font-size:12px;" onclick="removeDayExam(${idx})">✕</button>
+              <input type="date" value="${editingDayStr}" style="width:auto;flex:1;padding:5px 8px;font-size:13px;" onchange="haptic('light'); moveDayExam(${idx}, this.value)" />
+              <button class="btn btn-danger" style="padding:4px 8px;font-size:12px;" onclick="haptic('light'); removeDayExam(${idx})">✕</button>
             </div>`
           )
           .join('');
       }
 
-      // Events list
       const evs = state.events[editingDayStr] || [];
       const eList = document.getElementById('dayEventsList');
       if (!evs.length) {
-        eList.innerHTML = `<div style="font-size:13px;color:var(--text-muted);">Немає запланованих подій</div>`;
+        eList.innerHTML = `<div style="font-size:13px;color:var(--text-muted);">Немає приміток на цю дату</div>`;
       } else {
         eList.innerHTML = evs
           .map(
             (ev, idx) =>
-              `<div class="list-item"><span>📌 ${escapeHtml(ev)}</span><button class="btn btn-danger" style="padding:4px 8px;font-size:12px;" onclick="removeDayEvent(${idx})">✕</button></div>`
+              `<div class="list-item"><span>📌 ${escapeHtml(ev)}</span><button class="btn btn-danger" style="padding:4px 8px;font-size:12px;" onclick="haptic('light'); removeDayEvent(${idx})">✕</button></div>`
           )
           .join('');
       }
@@ -1741,11 +1840,9 @@
       if (!list || !list[idx]) return;
       const examName = list[idx];
 
-      // Remove from old date
       list.splice(idx, 1);
       if (!list.length) delete state.exams[editingDayStr];
 
-      // Add to new date
       if (!state.exams[newIso]) state.exams[newIso] = [];
       if (!state.exams[newIso].includes(examName)) {
         state.exams[newIso].push(examName);
@@ -1815,7 +1912,7 @@
           const val = arr[dIdx];
           html += `<div>`;
           html += `<div class="day-lbl-${dIdx}" style="font-size:10px;color:var(--text-muted);text-align:center;margin-bottom:2px;">${lbl}</div>`;
-          html += `<select id="s_${sIdx}_d_${dIdx}" onchange="updateSingleShiftPreview(${sIdx})">`;
+          html += `<select id="s_${sIdx}_d_${dIdx}" onchange="haptic('light'); updateSingleShiftPreview(${sIdx})">`;
           html += `<option value="1" ${val === '1' ? 'selected' : ''}>1</option>`;
           html += `<option value="2" ${val === '2' ? 'selected' : ''}>2</option>`;
           html += `<option value="3" ${val === '3' ? 'selected' : ''}>3</option>`;
@@ -1933,7 +2030,7 @@
           const rightMeta = [b.position ? escapeHtml(b.position) : '', b.shift ? 'Зміна ' + escapeHtml(b.shift) : ''].filter(Boolean).join(' · ');
           return `<div class="list-item">
             <span><b>${dd}.${mm}</b> — ${escapeHtml(b.name)}${rightMeta ? ` <span style="color:var(--text-muted)">(${rightMeta})</span>` : ''}</span>
-            <button class="btn btn-danger" style="padding:3px 7px;font-size:11px;" onclick="removeBirthday(${idx})">✕</button>
+            <button class="btn btn-danger" style="padding:3px 7px;font-size:11px;" onclick="haptic('light'); removeBirthday(${idx})">✕</button>
           </div>`;
         })
         .join('');
@@ -2109,6 +2206,7 @@
 
     // Init
     loadState();
+    bindScheduleTouchEvents();
     renderSchedule(selectedDateStr);
   </script>
 </body>
