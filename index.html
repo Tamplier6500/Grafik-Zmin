@@ -457,25 +457,7 @@
       color: #fca5a5;
     }
 
-    .shift-pills-wrap {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 2px;
-      width: 100%;
-    }
 
-    .shift-pills-wrap.dual .shift-pill {
-      width: 24px;
-      height: 28px;
-      font-size: 13px;
-    }
-
-    body.has-custom-col .shift-pills-wrap.dual .shift-pill {
-      width: 20px;
-      height: 26px;
-      font-size: 12px;
-    }
 
     .tag-note {
       width: 6px;
@@ -1064,7 +1046,7 @@
         </button>
         <input id="backupInput" type="file" accept=".json" style="display:none" onchange="importBackup(event)" />
         <div class="version-footer" style="display:flex;align-items:center;justify-content:center;gap:8px;padding-top:6px;">
-          <span>Версія додатку: <b id="updateCheckStatus">v1.8.2</b></span>
+          <span>Версія додатку: <b id="updateCheckStatus">v1.8.3</b></span>
           <button type="button" title="Оновити сторінку / перевірити оновлення" onclick="haptic('light'); forceRefreshApp()" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--surface-2);color:var(--text);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;line-height:1;">↻</button>
         </div>
       </div>
@@ -1143,21 +1125,15 @@
       </div>
       <div class="modal-body">
         <div class="field-group">
-          <div class="field-label">Номер зміни на цей день</div>
+          <div class="field-label">Значення на цей день</div>
           <div id="shiftOverrideChips" class="chip-grid">
             <div class="chip" data-val="auto" onclick="haptic('light'); selectOverride('auto')">За графіком</div>
             <div class="chip" data-val="1" onclick="haptic('light'); selectOverride('1')">1</div>
             <div class="chip" data-val="2" onclick="haptic('light'); selectOverride('2')">2</div>
             <div class="chip" data-val="3" onclick="haptic('light'); selectOverride('3')">3</div>
             <div class="chip" data-val="Р" onclick="haptic('light'); selectOverride('Р')">Р (Роб.)</div>
+            <div class="chip" data-val="Д" onclick="haptic('light'); selectOverride('Д')">Д (Дод.)</div>
             <div class="chip" data-val="-" onclick="haptic('light'); selectOverride('-')">- (Вих.)</div>
-          </div>
-        </div>
-
-        <div class="field-group">
-          <div class="field-label">Додатковий день</div>
-          <div class="chip-grid">
-            <div id="chipExtraD" class="chip" onclick="haptic('light'); toggleExtraD()">Д — Додатковий день</div>
           </div>
         </div>
 
@@ -1333,7 +1309,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'v1.8.2';
+    const APP_VERSION = 'v1.8.3';
     const SHIFTS = ['А', 'Б', 'В', 'Г', 'Д'];
     const EXAM_TYPES = ['ОП', 'ПБ', 'ПТЕ', 'НПАОП', 'РБ', 'ПНЯРБ'];
     const DOW_UA = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
@@ -1348,7 +1324,7 @@
       ['2', '2', '-', '-', '1']  // Д
     ];
 
-    const APP_BUILD = 182;
+    const APP_BUILD = 183;
     const DEFAULT_CUSTOM_WEEK = ['-', 'Р', 'Р', 'Р', 'Р', 'Р', '-'];
     const STORAGE_KEY = 'shift_schedule_pwa_v6';
 
@@ -2089,23 +2065,21 @@
         for (let sIdx = 0; sIdx < totalCols; sIdx++) {
           const cellKey = `${iso}_${sIdx}`;
           const cellMeta = state.cells[cellKey];
-          const val = (cellMeta && cellMeta.override) ? cellMeta.override : getScheduledShift(dObj, sIdx);
+          const val = (cellMeta && cellMeta.extraD)
+            ? 'Д'
+            : ((cellMeta && cellMeta.override) ? cellMeta.override : getScheduledShift(dObj, sIdx));
           const pillClass =
             val === '1' ? 's-1' :
             val === '2' ? 's-2' :
             val === '3' ? 's-3' :
-            val === 'Р' ? 's-r' : 's-off';
+            val === 'Р' ? 's-r' :
+            val === 'Д' ? 's-d' : 's-off';
 
-          const hasExtraD = Boolean(cellMeta && cellMeta.extraD);
           html += `<div class="shift-cell" data-sidx="${sIdx}">`;
           if (cellMeta && cellMeta.note) {
             html += `<span class="tag-note"></span>`;
           }
-          if (hasExtraD) {
-            html += `<div class="shift-pills-wrap dual"><div class="shift-pill ${pillClass}">${val}</div><div class="shift-pill s-d">Д</div></div>`;
-          } else {
-            html += `<div class="shift-pill ${pillClass}">${val}</div>`;
-          }
+          html += `<div class="shift-pill ${pillClass}">${val}</div>`;
           html += `</div>`;
         }
 
@@ -2165,8 +2139,8 @@
       editingCellKey = `${iso}_${sIdx}`;
       const existing = state.cells[editingCellKey] || { override: null, extraD: false, note: '' };
       tempCellData = {
-        override: existing.override || null,
-        extraD: Boolean(existing.extraD),
+        override: existing.extraD ? 'Д' : (existing.override || null),
+        extraD: false,
         note: existing.note || ''
       };
 
@@ -2179,24 +2153,23 @@
     function syncCellModalUI() {
       const ovVal = tempCellData.override || 'auto';
       document.querySelectorAll('#shiftOverrideChips .chip').forEach((el) => {
-        el.classList.toggle('active', el.dataset.val === ovVal);
+        el.classList.remove('active', 'active-d');
+        if (el.dataset.val === ovVal) {
+          el.classList.add(ovVal === 'Д' ? 'active-d' : 'active');
+        }
       });
-      document.getElementById('chipExtraD').classList.toggle('active-d', tempCellData.extraD);
     }
 
     function selectOverride(val) {
       tempCellData.override = val === 'auto' ? null : val;
-      syncCellModalUI();
-    }
-
-    function toggleExtraD() {
-      tempCellData.extraD = !tempCellData.extraD;
+      tempCellData.extraD = false;
       syncCellModalUI();
     }
 
     function saveCellData() {
       tempCellData.note = document.getElementById('cellNoteInput').value.trim();
-      const isEmpty = !tempCellData.override && !tempCellData.extraD && !tempCellData.note;
+      tempCellData.extraD = false;
+      const isEmpty = !tempCellData.override && !tempCellData.note;
       if (isEmpty) {
         delete state.cells[editingCellKey];
       } else {

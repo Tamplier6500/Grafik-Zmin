@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shift-schedule-v14';
+const CACHE_NAME = 'shift-schedule-v15';
 const ASSETS = [
   './',
   './index.html',
