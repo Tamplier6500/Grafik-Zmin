@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta id="metaThemeColor" name="theme-color" content="#f8fafc" />
+  <meta id="metaThemeColor" name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Графік змін" />
@@ -45,11 +45,10 @@
       --soff-text: #94a3b8;
 
       --top-bar-h: 54px;
-      --thead-h: 40px;
+      --thead-h: 42px;
       --bottom-bar-h: 58px;
     }
 
-    /* Softer Dark Theme (Slate/Charcoal tones instead of harsh pitch black) */
     body.dark {
       --bg: #181c24;
       --surface: #1e222b;
@@ -68,7 +67,6 @@
       --selected-bg: #3b3324;
       --weekend-bg: #1b1f27;
 
-      /* Soft pastel-on-dark pills without borders */
       --s1-bg: rgba(56, 189, 248, 0.16);
       --s1-text: #7dd3fc;
 
@@ -97,7 +95,7 @@
       overflow: hidden;
     }
 
-    /* Clean Top Bar matching reference (without "Бригади Абвгд" subtitle) */
+    /* Clean Top Bar */
     .app-header {
       position: fixed;
       top: 0;
@@ -133,7 +131,6 @@
       justify-content: center;
       font-size: 17px;
       flex-shrink: 0;
-      box-shadow: 0 2px 5px rgba(37, 99, 235, 0.28);
     }
 
     .app-title {
@@ -162,6 +159,7 @@
       align-items: center;
       justify-content: center;
       gap: 5px;
+      position: relative;
     }
 
     .hdr-btn.icon-only {
@@ -174,7 +172,24 @@
       transform: scale(0.96);
     }
 
-    /* Fixed 6-Column Header Bar */
+    .alert-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      min-width: 17px;
+      height: 17px;
+      padding: 0 4px;
+      border-radius: 9px;
+      background: #dc2626;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Fixed 6-Column Header Bar (Clickable Shift Columns А..Д) */
     .grid-header {
       position: fixed;
       top: calc(var(--top-bar-h) + env(safe-area-inset-top));
@@ -193,16 +208,49 @@
       text-align: center;
     }
 
-    .grid-header div {
+    .grid-header > div {
       height: 100%;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       border-right: 1px solid var(--border);
+      position: relative;
+      line-height: 1.05;
     }
 
-    .grid-header div:last-child {
+    .grid-header > div:last-child {
       border-right: none;
+    }
+
+    .shift-col-hdr {
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.12s;
+    }
+
+    .shift-col-hdr:active {
+      background: var(--today-bg);
+    }
+
+    .shift-col-sub {
+      font-size: 9.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      max-width: 92%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .shift-col-dot {
+      position: absolute;
+      top: 4px;
+      right: 5px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #2563eb;
     }
 
     /* Scrollable Schedule Area */
@@ -232,6 +280,14 @@
       background: var(--weekend-bg);
     }
 
+    .day-row.holiday {
+      background: rgba(239, 68, 68, 0.06);
+    }
+
+    body.dark .day-row.holiday {
+      background: rgba(248, 113, 113, 0.08);
+    }
+
     .day-row.today {
       background: var(--today-bg);
       box-shadow: inset 3px 0 0 var(--today-border);
@@ -244,7 +300,7 @@
     }
 
     .date-cell {
-      padding: 4px 4px;
+      padding: 4px 3px;
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
@@ -268,7 +324,16 @@
     }
 
     .day-row.weekend .date-dow,
-    .day-row.weekend .date-num {
+    .day-row.weekend .date-num,
+    .day-row.holiday .date-dow,
+    .day-row.holiday .date-num {
+      color: #ef4444;
+    }
+
+    body.dark .day-row.weekend .date-dow,
+    body.dark .day-row.weekend .date-num,
+    body.dark .day-row.holiday .date-dow,
+    body.dark .day-row.holiday .date-num {
       color: #f87171;
     }
 
@@ -300,7 +365,6 @@
       border-right: none;
     }
 
-    /* Borderless background pill for shift number or "-" */
     .shift-pill {
       width: 34px;
       height: 30px;
@@ -352,7 +416,17 @@
       line-height: 1.1;
     }
 
-    .tag-exam {
+    .tag-exam-due {
+      background: #d97706;
+      color: #fff;
+      font-size: 8.5px;
+      font-weight: 700;
+      padding: 1px 3px;
+      border-radius: 4px;
+      line-height: 1.1;
+    }
+
+    .tag-exam-passed {
       background: #059669;
       color: #fff;
       font-size: 8.5px;
@@ -372,7 +446,7 @@
       right: 4px;
     }
 
-    /* Bottom 1-Row Navigation Bar */
+    /* Bottom 1-Row Navigation Bar (NO blue strip or outline) */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -389,6 +463,7 @@
       padding-right: 10px;
       gap: 6px;
       z-index: 40;
+      box-shadow: none;
     }
 
     .nav-btn {
@@ -406,11 +481,11 @@
       align-items: center;
       justify-content: center;
       user-select: none;
+      outline: none;
     }
 
     .nav-btn:active {
-      background: var(--today-bg);
-      border-color: var(--today-border);
+      background: var(--surface);
       transform: scale(0.96);
     }
 
@@ -429,10 +504,11 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
+      outline: none;
     }
 
     .nav-center:active {
-      background: var(--today-bg);
+      background: var(--surface);
     }
 
     /* Modals */
@@ -562,6 +638,13 @@
       color: #93c5fd;
     }
 
+    .version-footer {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      padding-top: 4px;
+    }
+
     .field-group {
       display: flex;
       flex-direction: column;
@@ -577,6 +660,7 @@
     input[type="text"],
     input[type="date"],
     input[type="number"],
+    textarea,
     select {
       width: 100%;
       padding: 9px 10px;
@@ -585,6 +669,7 @@
       background: var(--surface-2);
       color: var(--text);
       font-size: 14px;
+      font-family: inherit;
     }
 
     .chip-grid {
@@ -617,10 +702,74 @@
       border-color: #dc2626;
     }
 
-    .chip.active-exam {
+    .chip.active-due {
+      background: #d97706;
+      color: #fff;
+      border-color: #d97706;
+    }
+
+    .chip.active-passed {
       background: #059669;
       color: #fff;
       border-color: #059669;
+    }
+
+    .exam-subpanel {
+      margin-top: 8px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .exam-subpanel-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .exam-mode-btns {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .mini-chip {
+      flex: 1;
+      min-width: 84px;
+      padding: 7px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .mini-chip.sel-due {
+      background: #d97706;
+      color: #fff;
+      border-color: #d97706;
+    }
+
+    .mini-chip.sel-passed {
+      background: #059669;
+      color: #fff;
+      border-color: #059669;
+    }
+
+    .mini-chip.sel-remove {
+      background: rgba(220, 38, 38, 0.12);
+      color: #dc2626;
+      border-color: rgba(220, 38, 38, 0.35);
     }
 
     .shift-seq-card {
@@ -680,37 +829,68 @@
       border-radius: 10px;
       padding: 10px 12px;
     }
+
+    .holiday-banner {
+      padding: 9px 11px;
+      border-radius: 9px;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #dc2626;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    body.dark .holiday-banner {
+      color: #fca5a5;
+    }
+
+    .warn-banner {
+      padding: 9px 11px;
+      border-radius: 9px;
+      background: rgba(217, 119, 6, 0.14);
+      border: 1px solid rgba(217, 119, 6, 0.4);
+      color: #b45309;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    body.dark .warn-banner {
+      color: #fcd34d;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Clean Top Header (matching reference without "Бригади Абвгд") -->
+  <!-- Clean Top Header -->
   <header class="app-header">
     <div class="app-brand">
       <div class="app-logo">📅</div>
       <div class="app-title">Графік змін</div>
     </div>
     <div class="header-actions">
+      <button id="examAlertBtn" class="hdr-btn icon-only" style="display:none;" title="Нагадування про екзамени" onclick="openExamAlertsModal()">
+        🔔<span id="examAlertCount" class="alert-badge">0</span>
+      </button>
       <button id="headerInstallBtn" class="hdr-btn" style="display:none;" onclick="triggerInstall()">📲</button>
       <button id="themeHeaderBtn" class="hdr-btn icon-only" title="Змінити тему" onclick="toggleTheme()">🌙</button>
       <button class="hdr-btn" onclick="openModal('menuModal')">☰ Меню</button>
     </div>
   </header>
 
-  <!-- Fixed 6-column Table Header -->
+  <!-- Fixed 6-column Table Header (Tap А..Д to add shift note / personnel) -->
   <div class="grid-header" role="row">
     <div>Дата</div>
-    <div>А</div>
-    <div>Б</div>
-    <div>В</div>
-    <div>Г</div>
-    <div>Д</div>
+    <div id="colHdr_0" class="shift-col-hdr" onclick="openShiftNoteModal(0)"><span>А</span></div>
+    <div id="colHdr_1" class="shift-col-hdr" onclick="openShiftNoteModal(1)"><span>Б</span></div>
+    <div id="colHdr_2" class="shift-col-hdr" onclick="openShiftNoteModal(2)"><span>В</span></div>
+    <div id="colHdr_3" class="shift-col-hdr" onclick="openShiftNoteModal(3)"><span>Г</span></div>
+    <div id="colHdr_4" class="shift-col-hdr" onclick="openShiftNoteModal(4)"><span>Д</span></div>
   </div>
 
   <!-- Scrollable Schedule Table -->
   <main id="scheduleScroll" class="schedule-scroll"></main>
 
-  <!-- Bottom 1-Row Navigation Bar -->
+  <!-- Bottom 1-Row Navigation Bar (Clean, borderless bottom edge) -->
   <nav class="bottom-nav" aria-label="Навігація по датах">
     <button class="nav-btn" title="Попередній місяць" onclick="shiftMonth(-1)">&lt;&lt;</button>
     <button class="nav-btn" title="Попередній день" onclick="shiftDay(-1)">&lt;</button>
@@ -731,12 +911,16 @@
           <span>📲 Додати на головний екран (PWA)</span>
           <span>›</span>
         </button>
+        <button class="menu-item" onclick="closeModal('menuModal'); openExamAlertsModal();">
+          <span>🔔 Найближчі екзамени (попередження за 14 дн.)</span>
+          <span id="menuExamCount">0</span>
+        </button>
         <button class="menu-item" onclick="closeModal('menuModal'); openPatternModal();">
           <span>⚙️ Налаштування порядку змін</span>
           <span>›</span>
         </button>
         <button class="menu-item" onclick="closeModal('menuModal'); openBirthdaysModal();">
-          <span>🎂 Дні народження (імпорт Excel)</span>
+          <span>🎂 Дні народження (Excel та вручну)</span>
           <span>›</span>
         </button>
         <button class="menu-item" onclick="exportBackup()">
@@ -748,6 +932,49 @@
           <span>›</span>
         </button>
         <input id="backupInput" type="file" accept=".json" style="display:none" onchange="importBackup(event)" />
+        <div class="version-footer">Версія додатку: <b>v1.4.1</b></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shift Column Note Modal (Click А, Б, В, Г, Д header) -->
+  <div id="shiftNoteModal" class="modal-backdrop" onclick="backdropClose(event, 'shiftNoteModal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span id="shiftNoteTitle">Примітка для Зміни А</span>
+        <button class="modal-close" onclick="closeModal('shiftNoteModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="hint-box">
+          Запишіть склад зміни, відповідальних працівників або важливу інформацію для цієї зміни.
+        </div>
+        <div class="field-group">
+          <div class="field-label">Склад зміни / примітка</div>
+          <textarea id="shiftNoteTextarea" rows="5" placeholder="Наприклад:&#10;НЗ: Іваненко І.І.&#10;Оператор: Петренко П.П."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="clearShiftNote()">Очистити</button>
+        <button class="btn btn-primary" onclick="saveShiftNote()">Зберегти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upcoming Exam Alerts Modal (14 days warning) -->
+  <div id="examAlertsModal" class="modal-backdrop" onclick="backdropClose(event, 'examAlertsModal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span>🔔 Попередження про екзамени</span>
+        <button class="modal-close" onclick="closeModal('examAlertsModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="hint-box">
+          Відображаються заплановані екзамени, до здачі яких залишилось <b>14 днів або менше</b> (включно з простроченими за останні 7 днів).
+        </div>
+        <div id="examAlertsList" style="display:flex;flex-direction:column;gap:6px;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeModal('examAlertsModal')">Закрити</button>
       </div>
     </div>
   </div>
@@ -779,7 +1006,7 @@
     </div>
   </div>
 
-  <!-- Cell Edit Modal -->
+  <!-- Cell Edit Modal (Override, Д, Exams with Due / Passed +1y / +2y) -->
   <div id="cellModal" class="modal-backdrop" onclick="backdropClose(event, 'cellModal')">
     <div class="modal-card">
       <div class="modal-header">
@@ -806,15 +1033,9 @@
         </div>
 
         <div class="field-group">
-          <div class="field-label">Екзамени (можна обрати декілька)</div>
-          <div id="examChips" class="chip-grid">
-            <div class="chip" data-exam="ОП" onclick="toggleExam('ОП')">ОП</div>
-            <div class="chip" data-exam="ПБ" onclick="toggleExam('ПБ')">ПБ</div>
-            <div class="chip" data-exam="ПТЕ" onclick="toggleExam('ПТЕ')">ПТЕ</div>
-            <div class="chip" data-exam="НПАОП" onclick="toggleExam('НПАОП')">НПАОП</div>
-            <div class="chip" data-exam="РБ" onclick="toggleExam('РБ')">РБ</div>
-            <div class="chip" data-exam="ПНЯРБ" onclick="toggleExam('ПНЯРБ')">ПНЯРБ</div>
-          </div>
+          <div class="field-label">Екзамени (натисніть на екзамен для вибору статусу)</div>
+          <div id="examChipsGrid" class="chip-grid"></div>
+          <div id="examActionPanel" class="exam-subpanel" style="display:none;"></div>
         </div>
 
         <div class="field-group">
@@ -829,7 +1050,7 @@
     </div>
   </div>
 
-  <!-- Day Events & Birthdays Modal -->
+  <!-- Day Events, Holidays & Birthdays Modal -->
   <div id="dayModal" class="modal-backdrop" onclick="backdropClose(event, 'dayModal')">
     <div class="modal-card">
       <div class="modal-header">
@@ -837,6 +1058,8 @@
         <button class="modal-close" onclick="closeModal('dayModal')">&times;</button>
       </div>
       <div class="modal-body">
+        <div id="dayHolidayBox" class="holiday-banner" style="display:none;"></div>
+
         <div id="dayBirthdaysBox" style="display:none;">
           <div class="field-label" style="margin-bottom:4px;">🎂 Дні народження цього дня:</div>
           <div id="dayBirthdaysList" style="display:flex;flex-direction:column;gap:4px;"></div>
@@ -861,7 +1084,7 @@
     </div>
   </div>
 
-  <!-- Pattern Settings Modal (Anchor date + 5 days per shift А..Д -> auto 15-day cycle 111--333--222--) -->
+  <!-- Pattern Settings Modal -->
   <div id="patternModal" class="modal-backdrop" onclick="backdropClose(event, 'patternModal')">
     <div class="modal-card">
       <div class="modal-header">
@@ -887,20 +1110,38 @@
     </div>
   </div>
 
-  <!-- Birthdays Excel Import Modal -->
+  <!-- Birthdays Excel + Manual Add Modal -->
   <div id="birthdaysModal" class="modal-backdrop" onclick="backdropClose(event, 'birthdaysModal')">
     <div class="modal-card">
       <div class="modal-header">
-        <span>Дні народження (Excel)</span>
+        <span>Дні народження</span>
         <button class="modal-close" onclick="closeModal('birthdaysModal')">&times;</button>
       </div>
       <div class="modal-body">
+        <div class="shift-seq-card">
+          <div class="field-label">➕ Додати день народження вручну</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <input id="manualBdayDate" type="date" />
+            <select id="manualBdayShift">
+              <option value="">Без зміни</option>
+              <option value="А">Зміна А</option>
+              <option value="Б">Зміна Б</option>
+              <option value="В">Зміна В</option>
+              <option value="Г">Зміна Г</option>
+              <option value="Д">Зміна Д</option>
+            </select>
+          </div>
+          <input id="manualBdayName" type="text" placeholder="Прізвище Ім'я По батькові" />
+          <input id="manualBdayPos" type="text" placeholder="Посада (необов'язково)" />
+          <button class="btn btn-primary" onclick="addManualBirthday()">Додати в список</button>
+        </div>
+
         <div class="hint-box">
-          Завантажте файл <b>.xlsx</b>, <b>.xls</b> або <b>.csv</b> з двома колонками: <b>Дата</b> (ДД.ММ або ДД.ММ.РРРР) та <b>ПІБ / Ім'я</b> (необов'язково 3-тя колонка: <b>Зміна</b> А–Д).
+          Або завантажте таблицю Excel (<b>.xlsx</b>, <b>.xls</b>, <b>.csv</b>): <b>Прізвище | Ім'я | По батькові | Дата народження | Посада</b>.
         </div>
 
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn btn-primary" onclick="document.getElementById('excelFileInput').click()">📥 Завантажити Excel</button>
+          <button class="btn" onclick="document.getElementById('excelFileInput').click()">📥 Імпорт Excel</button>
           <button class="btn" onclick="downloadExcelTemplate()">📄 Шаблон Excel</button>
           <button class="btn btn-danger" onclick="clearBirthdays()">🗑 Очистити</button>
           <input id="excelFileInput" type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleExcelImport(event)" />
@@ -916,18 +1157,13 @@
   </div>
 
   <script>
+    const APP_VERSION = 'v1.4.1';
     const SHIFTS = ['А', 'Б', 'В', 'Г', 'Д'];
+    const EXAM_TYPES = ['ОП', 'ПБ', 'ПТЕ', 'НПАОП', 'РБ', 'ПНЯРБ'];
     const DOW_UA = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
 
-    // Master 15-day repeating cycle: 111--333--222--
     const MASTER_CYCLE = ['1','1','1','-','-','3','3','3','-','-','2','2','2','-','-'];
 
-    // Default 5-day starts from 01.01.2026:
-    // А: 1--33 (index 2 in MASTER_CYCLE -> 1, -, -, 3, 3, 3, -, -, 2, 2, 2, -, -, 1, 1)
-    // Б: --222 (index 8 in MASTER_CYCLE -> -, -, 2, 2, 2, -, -, 1, 1, 1, -, -, 3, 3, 3)
-    // В: -111- (index 14 in MASTER_CYCLE -> -, 1, 1, 1, -, -, 3, 3, 3, -, -, 2, 2, 2, -)
-    // Г: 333-- (index 5 in MASTER_CYCLE -> 3, 3, 3, -, -, 2, 2, 2, -, -, 1, 1, 1, -, -)
-    // Д: 22--1 (index 11 in MASTER_CYCLE -> 2, 2, -, -, 1, 1, 1, -, -, 3, 3, 3, -, -, 2)
     const DEFAULT_FIVE_DAYS = [
       ['1', '-', '-', '3', '3'], // А
       ['-', '-', '2', '2', '2'], // Б
@@ -936,15 +1172,16 @@
       ['2', '2', '-', '-', '1']  // Д
     ];
 
-    const STORAGE_KEY = 'shift_schedule_pwa_v3';
+    const STORAGE_KEY = 'shift_schedule_pwa_v4';
 
     let state = {
       theme: 'light',
       anchorDate: '2026-01-01',
       fiveDays: DEFAULT_FIVE_DAYS.map((arr) => [...arr]),
-      cells: {},      // "YYYY-MM-DD_0": { override: '1'|'2'|'3'|'-'|null, extraD: bool, exams: [], note: '' }
+      shiftNotes: ['', '', '', '', ''],
+      cells: {},      // "YYYY-MM-DD_0": { override, extraD, exams: [{ name, status: 'due'|'passed', validYears: 1|2, nextDate }], note }
       events: {},     // "YYYY-MM-DD": [ "Текст події" ]
-      birthdays: []   // [ { mmdd: "05-14", name: "Іванов І.І.", shift: "А" } ]
+      birthdays: []   // [ { mmdd: "05-14", name: "...", position: "...", shift: "А" } ]
     };
 
     const today = new Date();
@@ -954,10 +1191,59 @@
     let viewMonth = today.getMonth();
     let selectedDateStr = toISODate(today);
 
+    let editingShiftIdx = 0;
     let editingCellKey = null;
+    let activeExamName = null;
     let tempCellData = { override: null, extraD: false, exams: [], note: '' };
     let editingDayStr = null;
     let deferredInstallPrompt = null;
+
+    // --- Ukrainian State Holidays (Fixed + Orthodox Easter / Trinity) ---
+    function getOrthodoxEaster(year) {
+      const a = year % 4;
+      const b = year % 7;
+      const c = year % 19;
+      const d = (19 * c + 15) % 30;
+      const e = (2 * a + 4 * b - d + 34) % 7;
+      const month = Math.floor((d + e + 114) / 31); // 3=March, 4=April (Julian)
+      const day = ((d + e + 114) % 31) + 1;
+      // Julian to Gregorian offset (+13 days for 1900..2099)
+      const julianDate = new Date(year, month - 1, day);
+      julianDate.setDate(julianDate.getDate() + 13);
+      return julianDate;
+    }
+
+    function getUkraineHoliday(dateObj) {
+      const y = dateObj.getFullYear();
+      const mmdd = `${pad2(dateObj.getMonth() + 1)}-${pad2(dateObj.getDate())}`;
+
+      const fixed = {
+        '01-01': 'Новий рік',
+        '03-08': 'Міжнародний жіночий день',
+        '05-01': 'День праці',
+        '05-08': 'День пам’яті та перемоги над нацизмом',
+        '06-28': 'День Конституції України',
+        '07-15': 'День Української Державності',
+        '08-24': 'День Незалежності України',
+        '10-01': 'День захисників і захисниць України',
+        '12-25': 'Різдво Христове'
+      };
+
+      if (fixed[mmdd]) return fixed[mmdd];
+
+      const easter = getOrthodoxEaster(y);
+      if (toISODate(dateObj) === toISODate(easter)) {
+        return 'Великдень (Пасха)';
+      }
+
+      const trinity = new Date(easter);
+      trinity.setDate(easter.getDate() + 49);
+      if (toISODate(dateObj) === toISODate(trinity)) {
+        return 'Трійця';
+      }
+
+      return null;
+    }
 
     // --- Service Worker & PWA Install Handling ---
     if ('serviceWorker' in navigator) {
@@ -1005,16 +1291,28 @@
       openModal('installHelpModal');
     }
 
-    // --- Storage & Theme ---
+    // --- Storage & Migration ---
     function loadState() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('shift_schedule_pwa_v3');
         if (raw) {
           const parsed = JSON.parse(raw);
           state = { ...state, ...parsed };
           if (!Array.isArray(state.fiveDays) || state.fiveDays.length !== 5) {
             state.fiveDays = DEFAULT_FIVE_DAYS.map((arr) => [...arr]);
           }
+          if (!Array.isArray(state.shiftNotes) || state.shiftNotes.length !== 5) {
+            state.shiftNotes = ['', '', '', '', ''];
+          }
+          // Migrate legacy string exams array to structured objects
+          Object.keys(state.cells || {}).forEach((k) => {
+            const c = state.cells[k];
+            if (c && Array.isArray(c.exams)) {
+              c.exams = c.exams.map((ex) =>
+                typeof ex === 'string' ? { name: ex, status: 'due', validYears: null, nextDate: null } : ex
+              );
+            }
+          });
         }
       } catch (e) {}
       applyTheme();
@@ -1060,26 +1358,32 @@
       return `${d}.${m}.${y}`;
     }
 
+    function addYearsISO(isoStr, years) {
+      const d = parseISODate(isoStr);
+      const origMonth = d.getMonth();
+      d.setFullYear(d.getFullYear() + years);
+      if (d.getMonth() !== origMonth) {
+        d.setDate(0); // Handle Feb 29 -> Feb 28
+      }
+      return toISODate(d);
+    }
+
     function diffDays(d1, d2) {
       const utc1 = Date.UTC(d1.getFullYear(), d1.getMonth(), d1.getDate());
       const utc2 = Date.UTC(d2.getFullYear(), d2.getMonth(), d2.getDate());
       return Math.floor((utc2 - utc1) / 86400000);
     }
 
-    // --- Automatic Shift Cycle Resolution from 5-Day Start ---
-    // Finds where the 5-day sequence sits in MASTER_CYCLE (111--333--222--),
-    // and continues automatically with 111--333--222-- forever.
+    // --- Shift Cycle Resolution ---
     function buildFull15DayCycle(fiveDayArr) {
-      const len = MASTER_CYCLE.length; // 15
+      const len = MASTER_CYCLE.length;
       let bestStartIdx = -1;
       let bestScore = -1;
 
       for (let start = 0; start < len; start++) {
         let score = 0;
         for (let i = 0; i < 5; i++) {
-          if (MASTER_CYCLE[(start + i) % len] === fiveDayArr[i]) {
-            score++;
-          }
+          if (MASTER_CYCLE[(start + i) % len] === fiveDayArr[i]) score++;
         }
         if (score > bestScore) {
           bestScore = score;
@@ -1090,7 +1394,6 @@
       const cycle = [];
       for (let i = 0; i < len; i++) {
         if (i < 5) {
-          // Always honor exact user-entered 5 days for days 1..5
           cycle.push(fiveDayArr[i]);
         } else {
           cycle.push(MASTER_CYCLE[(bestStartIdx + i) % len]);
@@ -1103,14 +1406,125 @@
       const anchor = parseISODate(state.anchorDate || '2026-01-01');
       const fiveDayArr = state.fiveDays[shiftIdx] || DEFAULT_FIVE_DAYS[shiftIdx];
       const fullCycle = buildFull15DayCycle(fiveDayArr);
-      const len = fullCycle.length; // 15
+      const len = fullCycle.length;
       const delta = diffDays(anchor, dateObj);
       const idx = ((delta % len) + len) % len;
       return fullCycle[idx] || '-';
     }
 
+    // --- Exam 14-Day Alerts Scanner ---
+    function getUpcomingExamAlerts() {
+      const alerts = [];
+      Object.entries(state.cells || {}).forEach(([cellKey, cellMeta]) => {
+        if (!cellMeta || !Array.isArray(cellMeta.exams)) return;
+        const [iso, sIdxStr] = cellKey.split('_');
+        const sIdx = Number(sIdxStr);
+        const examDate = parseISODate(iso);
+        const daysLeft = diffDays(today, examDate);
+
+        cellMeta.exams.forEach((ex) => {
+          if (ex.status === 'due' && daysLeft <= 14 && daysLeft >= -7) {
+            alerts.push({
+              iso,
+              shiftIdx: sIdx,
+              examName: ex.name,
+              daysLeft
+            });
+          }
+        });
+      });
+      alerts.sort((a, b) => a.daysLeft - b.daysLeft);
+      return alerts;
+    }
+
+    function updateExamAlertsBadge() {
+      const alerts = getUpcomingExamAlerts();
+      const btn = document.getElementById('examAlertBtn');
+      const badge = document.getElementById('examAlertCount');
+      const menuCnt = document.getElementById('menuExamCount');
+
+      if (menuCnt) menuCnt.textContent = alerts.length;
+      if (alerts.length > 0) {
+        btn.style.display = 'inline-flex';
+        badge.textContent = alerts.length;
+      } else {
+        btn.style.display = 'none';
+      }
+    }
+
+    function openExamAlertsModal() {
+      const alerts = getUpcomingExamAlerts();
+      const listEl = document.getElementById('examAlertsList');
+      if (!alerts.length) {
+        listEl.innerHTML = `<div style="font-size:13px;color:var(--text-muted);">На найближчі 14 днів запланованих екзаменів немає.</div>`;
+      } else {
+        listEl.innerHTML = alerts
+          .map((a) => {
+            const whenText =
+              a.daysLeft < 0
+                ? `Прострочено на ${Math.abs(a.daysLeft)} дн.`
+                : a.daysLeft === 0
+                ? 'Сьогодні!'
+                : `Через ${a.daysLeft} дн.`;
+            return `<div class="list-item" style="cursor:pointer;" onclick="closeModal('examAlertsModal'); jumpToDate('${a.iso}');">
+              <span>🔔 <b>${escapeHtml(a.examName)}</b> — Зміна ${SHIFTS[a.shiftIdx]} (${formatDisplayDate(a.iso)})</span>
+              <span style="color:#d97706;font-weight:700;">${whenText}</span>
+            </div>`;
+          })
+          .join('');
+      }
+      openModal('examAlertsModal');
+    }
+
+    function jumpToDate(iso) {
+      const d = parseISODate(iso);
+      viewYear = d.getFullYear();
+      viewMonth = d.getMonth();
+      selectedDateStr = iso;
+      renderSchedule(iso);
+    }
+
+    // --- Shift Column Header Notes ---
+    function renderShiftColumnHeaders() {
+      for (let i = 0; i < 5; i++) {
+        const el = document.getElementById(`colHdr_${i}`);
+        const note = (state.shiftNotes[i] || '').trim();
+        if (note) {
+          const firstLine = note.split('\n')[0];
+          el.innerHTML = `<span>${SHIFTS[i]}</span><span class="shift-col-sub">${escapeHtml(firstLine)}</span><span class="shift-col-dot"></span>`;
+        } else {
+          el.innerHTML = `<span>${SHIFTS[i]}</span>`;
+        }
+      }
+    }
+
+    function openShiftNoteModal(sIdx) {
+      editingShiftIdx = sIdx;
+      document.getElementById('shiftNoteTitle').textContent = `Примітка для Зміни ${SHIFTS[sIdx]}`;
+      document.getElementById('shiftNoteTextarea').value = state.shiftNotes[sIdx] || '';
+      openModal('shiftNoteModal');
+    }
+
+    function saveShiftNote() {
+      state.shiftNotes[editingShiftIdx] = document.getElementById('shiftNoteTextarea').value.trim();
+      saveState();
+      renderShiftColumnHeaders();
+      closeModal('shiftNoteModal');
+    }
+
+    function clearShiftNote() {
+      state.shiftNotes[editingShiftIdx] = '';
+      document.getElementById('shiftNoteTextarea').value = '';
+      saveState();
+      renderShiftColumnHeaders();
+      closeModal('shiftNoteModal');
+    }
+
     // --- Render Schedule ---
     function renderSchedule(scrollTargetDateStr = null) {
+      renderShiftColumnHeaders();
+      updateExamAlertsBadge();
+
       const container = document.getElementById('scheduleScroll');
       const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
       const todayStr = toISODate(today);
@@ -1124,6 +1538,7 @@
         const mmdd = `${pad2(viewMonth + 1)}-${pad2(day)}`;
         const dow = dObj.getDay();
         const isWeekend = dow === 0 || dow === 6;
+        const holidayName = getUkraineHoliday(dObj);
         const isToday = iso === todayStr;
         const isSelected = iso === selectedDateStr;
 
@@ -1132,6 +1547,7 @@
 
         const rowClasses = ['day-row'];
         if (isWeekend) rowClasses.push('weekend');
+        if (holidayName) rowClasses.push('holiday');
         if (isToday) rowClasses.push('today');
         if (isSelected) rowClasses.push('selected');
 
@@ -1139,8 +1555,9 @@
         html += `<div class="date-cell" onclick="openDayModal('${iso}')">`;
         html += `<span class="date-num">${pad2(day)}.${pad2(viewMonth + 1)}</span>`;
         html += `<span class="date-dow">${DOW_UA[dow]}</span>`;
-        if (dayEvents.length || dayBdays.length) {
+        if (holidayName || dayEvents.length || dayBdays.length) {
           html += `<div class="date-badges">`;
+          if (holidayName) html += `<span title="${escapeHtml(holidayName)}">🇺🇦</span>`;
           if (dayEvents.length) html += `<span>📌</span>`;
           if (dayBdays.length) html += `<span>🎂</span>`;
           html += `</div>`;
@@ -1163,7 +1580,11 @@
             if (cellMeta.extraD) html += `<span class="tag-d">Д</span>`;
             if (cellMeta.exams && cellMeta.exams.length) {
               cellMeta.exams.forEach((ex) => {
-                html += `<span class="tag-exam">${ex}</span>`;
+                if (ex.status === 'passed') {
+                  html += `<span class="tag-exam-passed">✓${ex.name}</span>`;
+                } else {
+                  html += `<span class="tag-exam-due">${ex.name}</span>`;
+                }
               });
             }
             html += `</div>`;
@@ -1231,7 +1652,7 @@
       if (e.target.id === id) closeModal(id);
     }
 
-    // --- Cell Editor ---
+    // --- Cell Editor (with Exam Due / Passed +1y / +2y) ---
     function openCellModal(iso, sIdx) {
       selectedDateStr = iso;
       editingCellKey = `${iso}_${sIdx}`;
@@ -1239,10 +1660,11 @@
       tempCellData = {
         override: existing.override || null,
         extraD: Boolean(existing.extraD),
-        exams: [...(existing.exams || [])],
+        exams: (existing.exams || []).map((ex) => ({ ...ex })),
         note: existing.note || ''
       };
 
+      activeExamName = null;
       document.getElementById('cellModalTitle').textContent = `Зміна ${SHIFTS[sIdx]} — ${formatDisplayDate(iso)}`;
       document.getElementById('cellNoteInput').value = tempCellData.note;
       syncCellModalUI();
@@ -1255,9 +1677,77 @@
         el.classList.toggle('active', el.dataset.val === ovVal);
       });
       document.getElementById('chipExtraD').classList.toggle('active-d', tempCellData.extraD);
-      document.querySelectorAll('#examChips .chip').forEach((el) => {
-        el.classList.toggle('active-exam', tempCellData.exams.includes(el.dataset.exam));
-      });
+
+      const gridEl = document.getElementById('examChipsGrid');
+      gridEl.innerHTML = EXAM_TYPES.map((name) => {
+        const found = tempCellData.exams.find((e) => e.name === name);
+        let cls = 'chip';
+        let label = name;
+        if (found) {
+          if (found.status === 'passed') {
+            cls += ' active-passed';
+            label = `✓ ${name} (${found.validYears} р.)`;
+          } else {
+            cls += ' active-due';
+            label = `${name} (здавати)`;
+          }
+        }
+        const outlineStyle = activeExamName === name ? 'outline:2px solid #2563eb;outline-offset:1px;' : '';
+        return `<div class="${cls}" style="${outlineStyle}" onclick="openExamPicker('${name}')">${label}</div>`;
+      }).join('');
+
+      const panelEl = document.getElementById('examActionPanel');
+      if (!activeExamName) {
+        panelEl.style.display = 'none';
+        panelEl.innerHTML = '';
+      } else {
+        const found = tempCellData.exams.find((e) => e.name === activeExamName);
+        const isDue = found && found.status === 'due';
+        const isP1 = found && found.status === 'passed' && found.validYears === 1;
+        const isP2 = found && found.status === 'passed' && found.validYears === 2;
+
+        panelEl.style.display = 'flex';
+        panelEl.innerHTML = `
+          <div class="exam-subpanel-title">
+            <span>Екзамен <b>${activeExamName}</b> — оберіть дію:</span>
+            <span style="cursor:pointer;color:var(--text-muted);font-size:16px;" onclick="closeExamPicker()">✕</span>
+          </div>
+          <div class="exam-mode-btns">
+            <button type="button" class="mini-chip ${isDue ? 'sel-due' : ''}" onclick="setExamMode('${activeExamName}', 'due', null)">Здавати</button>
+            <button type="button" class="mini-chip ${isP1 ? 'sel-passed' : ''}" onclick="setExamMode('${activeExamName}', 'passed', 1)">Здав (на 1 рік)</button>
+            <button type="button" class="mini-chip ${isP2 ? 'sel-passed' : ''}" onclick="setExamMode('${activeExamName}', 'passed', 2)">Здав (на 2 роки)</button>
+            ${found ? `<button type="button" class="mini-chip sel-remove" onclick="removeExamSelection('${activeExamName}')">Прибрати</button>` : ''}
+          </div>
+        `;
+      }
+    }
+
+    function openExamPicker(name) {
+      activeExamName = activeExamName === name ? null : name;
+      syncCellModalUI();
+    }
+
+    function closeExamPicker() {
+      activeExamName = null;
+      syncCellModalUI();
+    }
+
+    function removeExamSelection(name) {
+      tempCellData.exams = tempCellData.exams.filter((e) => e.name !== name);
+      activeExamName = null;
+      syncCellModalUI();
+    }
+
+    function setExamMode(name, status, validYears) {
+      const idx = tempCellData.exams.findIndex((e) => e.name === name);
+      if (idx >= 0) {
+        const cur = tempCellData.exams[idx];
+        tempCellData.exams[idx] = { name, status, validYears, nextDate: cur.nextDate || null };
+      } else {
+        tempCellData.exams.push({ name, status, validYears, nextDate: null });
+      }
+      activeExamName = null;
+      syncCellModalUI();
     }
 
     function selectOverride(val) {
@@ -1270,14 +1760,30 @@
       syncCellModalUI();
     }
 
-    function toggleExam(exam) {
-      const idx = tempCellData.exams.indexOf(exam);
-      if (idx >= 0) tempCellData.exams.splice(idx, 1);
-      else tempCellData.exams.push(exam);
-      syncCellModalUI();
-    }
-
     function saveCellData() {
+      const [iso, sIdxStr] = editingCellKey.split('_');
+      const prevCell = state.cells[editingCellKey];
+
+      // Remove previously auto-scheduled future exam reminders if changed/cleared
+      if (prevCell && Array.isArray(prevCell.exams)) {
+        prevCell.exams.forEach((oldEx) => {
+          if (oldEx.status === 'passed' && oldEx.nextDate) {
+            removeAutoScheduledExam(oldEx.nextDate, sIdxStr, oldEx.name);
+          }
+        });
+      }
+
+      // Schedule new future exam reminders (+1 year or +2 years)
+      tempCellData.exams.forEach((ex) => {
+        if (ex.status === 'passed' && (ex.validYears === 1 || ex.validYears === 2)) {
+          const nextIso = addYearsISO(iso, ex.validYears);
+          ex.nextDate = nextIso;
+          addAutoScheduledExam(nextIso, sIdxStr, ex.name);
+        } else {
+          ex.nextDate = null;
+        }
+      });
+
       tempCellData.note = document.getElementById('cellNoteInput').value.trim();
       const isEmpty = !tempCellData.override && !tempCellData.extraD && tempCellData.exams.length === 0 && !tempCellData.note;
       if (isEmpty) {
@@ -1285,19 +1791,50 @@
       } else {
         state.cells[editingCellKey] = { ...tempCellData };
       }
+
       saveState();
       closeModal('cellModal');
       renderSchedule();
     }
 
+    function addAutoScheduledExam(targetIso, sIdxStr, examName) {
+      const targetKey = `${targetIso}_${sIdxStr}`;
+      if (!state.cells[targetKey]) {
+        state.cells[targetKey] = { override: null, extraD: false, exams: [], note: '' };
+      }
+      const exists = state.cells[targetKey].exams.some((e) => e.name === examName && e.status === 'due');
+      if (!exists) {
+        state.cells[targetKey].exams.push({ name: examName, status: 'due', validYears: null, nextDate: null });
+      }
+    }
+
+    function removeAutoScheduledExam(targetIso, sIdxStr, examName) {
+      const targetKey = `${targetIso}_${sIdxStr}`;
+      const cell = state.cells[targetKey];
+      if (!cell || !Array.isArray(cell.exams)) return;
+      cell.exams = cell.exams.filter((e) => !(e.name === examName && e.status === 'due'));
+      if (!cell.override && !cell.extraD && cell.exams.length === 0 && !cell.note) {
+        delete state.cells[targetKey];
+      }
+    }
+
     function clearCellData() {
+      const [iso, sIdxStr] = editingCellKey.split('_');
+      const prevCell = state.cells[editingCellKey];
+      if (prevCell && Array.isArray(prevCell.exams)) {
+        prevCell.exams.forEach((oldEx) => {
+          if (oldEx.status === 'passed' && oldEx.nextDate) {
+            removeAutoScheduledExam(oldEx.nextDate, sIdxStr, oldEx.name);
+          }
+        });
+      }
       delete state.cells[editingCellKey];
       saveState();
       closeModal('cellModal');
       renderSchedule();
     }
 
-    // --- Day Events & Birthdays ---
+    // --- Day Events, Holidays & Birthdays ---
     function openDayModal(iso) {
       selectedDateStr = iso;
       editingDayStr = iso;
@@ -1308,6 +1845,16 @@
     }
 
     function renderDayModalLists() {
+      const dObj = parseISODate(editingDayStr);
+      const holidayName = getUkraineHoliday(dObj);
+      const holBox = document.getElementById('dayHolidayBox');
+      if (holidayName) {
+        holBox.style.display = 'block';
+        holBox.textContent = `🇺🇦 Державне свято України: ${holidayName}`;
+      } else {
+        holBox.style.display = 'none';
+      }
+
       const mmdd = editingDayStr.slice(5);
       const bdays = state.birthdays.filter((b) => b.mmdd === mmdd);
       const bBox = document.getElementById('dayBirthdaysBox');
@@ -1316,7 +1863,10 @@
       if (bdays.length) {
         bBox.style.display = 'block';
         bList.innerHTML = bdays
-          .map((b) => `<div class="list-item"><span>🎂 <b>${escapeHtml(b.name)}</b>${b.shift ? ` (Зміна ${escapeHtml(b.shift)})` : ''}</span></div>`)
+          .map((b) => {
+            const extra = [b.position ? escapeHtml(b.position) : '', b.shift ? `Зміна ${escapeHtml(b.shift)}` : ''].filter(Boolean).join(', ');
+            return `<div class="list-item"><span>🎂 <b>${escapeHtml(b.name)}</b>${extra ? ` <span style="color:var(--text-muted)">(${extra})</span>` : ''}</span></div>`;
+          })
           .join('');
       } else {
         bBox.style.display = 'none';
@@ -1357,7 +1907,7 @@
       renderSchedule();
     }
 
-    // --- Pattern Settings (Anchor Date + 5-day sequences for Зміна А..Д) ---
+    // --- Pattern Settings ---
     function openPatternModal() {
       document.getElementById('cfgAnchorDate').value = state.anchorDate || '2026-01-01';
       renderShiftsConfigUI(state.fiveDays);
@@ -1444,10 +1994,50 @@
       renderSchedule();
     }
 
-    // --- Birthdays Excel Import ---
+    // --- Birthdays (Manual + Excel Import) ---
     function openBirthdaysModal() {
+      document.getElementById('manualBdayDate').value = '';
+      document.getElementById('manualBdayName').value = '';
+      document.getElementById('manualBdayPos').value = '';
+      document.getElementById('manualBdayShift').value = '';
       renderBirthdaysList();
       openModal('birthdaysModal');
+    }
+
+    function addManualBirthday() {
+      const dateVal = document.getElementById('manualBdayDate').value;
+      const nameVal = document.getElementById('manualBdayName').value.trim();
+      const posVal = document.getElementById('manualBdayPos').value.trim();
+      const shiftVal = document.getElementById('manualBdayShift').value;
+
+      if (!dateVal || !nameVal) {
+        alert('Вкажіть дату народження та ПІБ.');
+        return;
+      }
+
+      const mmdd = dateVal.slice(5);
+      state.birthdays.push({
+        mmdd,
+        name: nameVal,
+        position: posVal,
+        shift: shiftVal
+      });
+      saveState();
+
+      document.getElementById('manualBdayDate').value = '';
+      document.getElementById('manualBdayName').value = '';
+      document.getElementById('manualBdayPos').value = '';
+      document.getElementById('manualBdayShift').value = '';
+
+      renderBirthdaysList();
+      renderSchedule();
+    }
+
+    function removeBirthday(idx) {
+      state.birthdays.splice(idx, 1);
+      saveState();
+      renderBirthdaysList();
+      renderSchedule();
     }
 
     function renderBirthdaysList() {
@@ -1458,10 +2048,14 @@
         return;
       }
       list.innerHTML = state.birthdays
-        .slice(0, 100)
-        .map((b) => {
+        .slice(0, 150)
+        .map((b, idx) => {
           const [mm, dd] = b.mmdd.split('-');
-          return `<div class="list-item"><span><b>${dd}.${mm}</b> — ${escapeHtml(b.name)}</span><span>${b.shift ? 'Зміна ' + escapeHtml(b.shift) : ''}</span></div>`;
+          const rightMeta = [b.position ? escapeHtml(b.position) : '', b.shift ? 'Зміна ' + escapeHtml(b.shift) : ''].filter(Boolean).join(' · ');
+          return `<div class="list-item">
+            <span><b>${dd}.${mm}</b> — ${escapeHtml(b.name)}${rightMeta ? ` <span style="color:var(--text-muted)">(${rightMeta})</span>` : ''}</span>
+            <button class="btn btn-danger" style="padding:3px 7px;font-size:11px;" onclick="removeBirthday(${idx})">✕</button>
+          </div>`;
         })
         .join('');
     }
@@ -1488,7 +2082,7 @@
       const file = e.target.files[0];
       if (!file) return;
       if (!window.XLSX) {
-        alert('Бібліотека Excel ще завантажується або відсутній інтернет. Спробуйте CSV або підключіться до мережі.');
+        alert('Бібліотека Excel ще завантажується або відсутній інтернет.');
         return;
       }
       const reader = new FileReader();
@@ -1499,21 +2093,66 @@
           const sheet = workbook.Sheets[workbook.SheetNames[0]];
           const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
           const imported = [];
+
+          let colLast = -1, colFirst = -1, colPatr = -1, colDate = -1, colPos = -1, colShift = -1;
+          const firstRow = rows[0] || [];
+          firstRow.forEach((cell, cIdx) => {
+            const h = String(cell || '').trim().toLowerCase();
+            if (h.includes('прізвище') || h.includes('фамилия')) colLast = cIdx;
+            else if (h === "ім'я" || h === 'імя' || h === 'имя') colFirst = cIdx;
+            else if (h.includes('батькові') || h.includes('отчество')) colPatr = cIdx;
+            else if (h.includes('дата') || h.includes('народж') || h.includes('рожден')) colDate = cIdx;
+            else if (h.includes('посада') || h.includes('должн')) colPos = cIdx;
+            else if (h.includes('зміна') || h.includes('смена')) colShift = cIdx;
+          });
+
           rows.forEach((row, idx) => {
-            if (!row || row.length < 2) return;
-            const mmdd = parseExcelBirthdayDate(row[0]);
-            const name = String(row[1] || '').trim();
-            const shift = row[2] ? String(row[2]).trim().toUpperCase() : '';
-            if (mmdd && name) {
-              imported.push({ mmdd, name, shift });
-            } else if (idx > 0 && row[1]) {
-              const mmddAlt = parseExcelBirthdayDate(row[1]);
-              const nameAlt = String(row[0] || '').trim();
-              if (mmddAlt && nameAlt) imported.push({ mmdd: mmddAlt, name: nameAlt, shift });
+            if (!row || !row.length) return;
+
+            if (colDate !== -1 && (colLast !== -1 || colFirst !== -1)) {
+              if (idx === 0) return;
+              const mmdd = parseExcelBirthdayDate(row[colDate]);
+              const nameParts = [
+                colLast !== -1 ? String(row[colLast] || '').trim() : '',
+                colFirst !== -1 ? String(row[colFirst] || '').trim() : '',
+                colPatr !== -1 ? String(row[colPatr] || '').trim() : ''
+              ].filter(Boolean);
+              const name = nameParts.join(' ');
+              const pos = colPos !== -1 ? String(row[colPos] || '').trim() : '';
+              const shift = colShift !== -1 ? String(row[colShift] || '').trim().toUpperCase() : '';
+              if (mmdd && name) {
+                imported.push({ mmdd, name, position: pos, shift });
+              }
+              return;
+            }
+
+            if (row.length >= 4 && parseExcelBirthdayDate(row[3])) {
+              const mmdd = parseExcelBirthdayDate(row[3]);
+              const name = [row[0], row[1], row[2]].map((v) => String(v || '').trim()).filter(Boolean).join(' ');
+              const pos = row[4] ? String(row[4]).trim() : '';
+              const shift = row[5] ? String(row[5]).trim().toUpperCase() : '';
+              if (mmdd && name) {
+                imported.push({ mmdd, name, position: pos, shift });
+                return;
+              }
+            }
+
+            if (row.length >= 2) {
+              const mmdd = parseExcelBirthdayDate(row[0]);
+              const name = String(row[1] || '').trim();
+              const shift = row[2] ? String(row[2]).trim().toUpperCase() : '';
+              if (mmdd && name) {
+                imported.push({ mmdd, name, position: '', shift });
+              } else if (idx > 0 && row[1]) {
+                const mmddAlt = parseExcelBirthdayDate(row[1]);
+                const nameAlt = String(row[0] || '').trim();
+                if (mmddAlt && nameAlt) imported.push({ mmdd: mmddAlt, name: nameAlt, position: '', shift });
+              }
             }
           });
+
           if (!imported.length) {
-            alert('Не знайдено коректних записів. Перевірте формат: 1-ша колонка Дата (ДД.ММ.РРРР), 2-га колонка ПІБ.');
+            alert('Не знайдено коректних записів.');
             return;
           }
           state.birthdays = imported;
@@ -1531,10 +2170,9 @@
     function downloadExcelTemplate() {
       if (!window.XLSX) return;
       const wsData = [
-        ['Дата народження', 'ПІБ', 'Зміна'],
-        ['15.03.1988', 'Коваленко Олександр Петрович', 'А'],
-        ['24.08.1992', 'Мельник Ірина Василівна', 'Б'],
-        ['12.11.1985', 'Бондаренко Сергій Іванович', 'В']
+        ['Прізвище', "Ім'я", 'По батькові', 'Дата народження', 'Посада'],
+        ['Михайлець', 'Максим', 'Олексійович', '22.06.1973', 'НЗ ХЦ'],
+        ['Мельник', 'Микола', 'Миколайович', '01.06.1982', 'оператор СВО']
       ];
       const wb = XLSX.utils.book_new();
       const ws = XLSX.utils.aoa_to_sheet(wsData);
