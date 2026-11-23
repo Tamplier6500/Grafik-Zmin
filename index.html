@@ -29,7 +29,7 @@
       --today-bg: #dbeafe;
       --today-border: #2563eb;
       --selected-bg: #fef9c3;
-      --weekend-bg: #f8fafc;
+      --weekend-bg: #eef2f7;
 
       --s1-bg: #e0f2fe;
       --s1-text: #0369a1;
@@ -72,7 +72,7 @@
       --today-bg: #23334c;
       --today-border: #60a5fa;
       --selected-bg: #3b3324;
-      --weekend-bg: #1b1f27;
+      --weekend-bg: #262c38;
 
       --s1-bg: rgba(56, 189, 248, 0.16);
       --s1-text: #7dd3fc;
@@ -298,6 +298,14 @@
       background: var(--weekend-bg);
     }
 
+    .day-row.weekend[data-dow="0"] {
+      border-bottom: 2px solid #94a3b8;
+    }
+
+    body.dark .day-row.weekend[data-dow="0"] {
+      border-bottom: 2px solid #475569;
+    }
+
     .day-row.holiday {
       background: rgba(239, 68, 68, 0.06);
     }
@@ -439,23 +447,34 @@
       color: var(--soff-text);
     }
 
-    .cell-tags {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 2px;
-      margin-top: 2px;
-      max-width: 100%;
+    .s-d {
+      background: #fee2e2;
+      color: #dc2626;
     }
 
-    .tag-d {
-      background: #dc2626;
-      color: #fff;
-      font-size: 9px;
-      font-weight: 800;
-      padding: 1px 4px;
-      border-radius: 4px;
-      line-height: 1.1;
+    body.dark .s-d {
+      background: rgba(239, 68, 68, 0.22);
+      color: #fca5a5;
+    }
+
+    .shift-pills-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      width: 100%;
+    }
+
+    .shift-pills-wrap.dual .shift-pill {
+      width: 24px;
+      height: 28px;
+      font-size: 13px;
+    }
+
+    body.has-custom-col .shift-pills-wrap.dual .shift-pill {
+      width: 20px;
+      height: 26px;
+      font-size: 12px;
     }
 
     .tag-note {
@@ -1028,19 +1047,11 @@
           <span id="menuExamCount">0</span>
         </button>
         <button class="menu-item" onclick="haptic('light'); closeModal('menuModal'); openPatternModal();">
-          <span>⚙️ Налаштування порядку змін та графіка</span>
+          <span>⚙️ Налаштування змін</span>
           <span>›</span>
         </button>
         <button class="menu-item" onclick="haptic('light'); closeModal('menuModal'); openBirthdaysModal();">
           <span>🎂 Дні народження</span>
-          <span>›</span>
-        </button>
-        <button class="menu-item" onclick="haptic('light'); manualCheckForUpdates()">
-          <span>🔄 Перевірити оновлення</span>
-          <span id="updateCheckStatus" style="font-size:12px;color:var(--text-muted);">v1.8.1</span>
-        </button>
-        <button class="menu-item" onclick="haptic('light'); closeModal('menuModal'); startTour();">
-          <span>💡 Швидке ознайомлення з функціями</span>
           <span>›</span>
         </button>
         <button class="menu-item" onclick="haptic('light'); exportBackup()">
@@ -1052,7 +1063,10 @@
           <span>›</span>
         </button>
         <input id="backupInput" type="file" accept=".json" style="display:none" onchange="importBackup(event)" />
-        <div class="version-footer">Версія додатку: <b>v1.8.1</b></div>
+        <div class="version-footer" style="display:flex;align-items:center;justify-content:center;gap:8px;padding-top:6px;">
+          <span>Версія додатку: <b id="updateCheckStatus">v1.8.2</b></span>
+          <button type="button" title="Оновити сторінку / перевірити оновлення" onclick="haptic('light'); forceRefreshApp()" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--surface-2);color:var(--text);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;line-height:1;">↻</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1205,7 +1219,7 @@
   <div id="patternModal" class="modal-backdrop" onclick="backdropClose(event, 'patternModal')">
     <div class="modal-card">
       <div class="modal-header">
-        <span>Порядок змін та свій графік</span>
+        <span>Налаштування змін</span>
         <button class="modal-close" onclick="haptic('light'); closeModal('patternModal')">&times;</button>
       </div>
       <div class="modal-body">
@@ -1220,7 +1234,6 @@
               <input id="cfgCustomColTitle" type="text" maxlength="4" placeholder="Я" />
             </div>
             <div class="field-group">
-              <div class="field-label">Шаблон по днях тижня (за замовчуванням Пн–Пт: Р)</div>
               <div class="week-days-grid">
                 <div>
                   <div style="font-size:10px;color:var(--text-muted);text-align:center;">Пн</div>
@@ -1320,7 +1333,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'v1.8.1';
+    const APP_VERSION = 'v1.8.2';
     const SHIFTS = ['А', 'Б', 'В', 'Г', 'Д'];
     const EXAM_TYPES = ['ОП', 'ПБ', 'ПТЕ', 'НПАОП', 'РБ', 'ПНЯРБ'];
     const DOW_UA = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
@@ -1335,7 +1348,7 @@
       ['2', '2', '-', '-', '1']  // Д
     ];
 
-    const APP_BUILD = 181;
+    const APP_BUILD = 182;
     const DEFAULT_CUSTOM_WEEK = ['-', 'Р', 'Р', 'Р', 'Р', 'Р', '-'];
     const STORAGE_KEY = 'shift_schedule_pwa_v6';
 
@@ -1481,6 +1494,23 @@
         });
       }
       checkRemoteVersion(true);
+    }
+
+    function forceRefreshApp() {
+      const statusEl = document.getElementById('updateCheckStatus');
+      if (statusEl) statusEl.textContent = '...';
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistration().then((reg) => {
+          if (reg) reg.update().catch(() => {});
+        });
+      }
+      if ('caches' in window) {
+        caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k)))).finally(() => {
+          window.location.reload();
+        });
+      } else {
+        window.location.reload();
+      }
     }
 
     if ('serviceWorker' in navigator) {
@@ -2037,7 +2067,7 @@
         if (isToday) rowClasses.push('today');
         if (isSelected) rowClasses.push('selected');
 
-        html += `<div class="${rowClasses.join(' ')}" data-date="${iso}">`;
+        html += `<div class="${rowClasses.join(' ')}" data-date="${iso}" data-dow="${dow}">`;
 
         // Date cell
         html += `<div class="date-cell">`;
@@ -2066,13 +2096,15 @@
             val === '3' ? 's-3' :
             val === 'Р' ? 's-r' : 's-off';
 
+          const hasExtraD = Boolean(cellMeta && cellMeta.extraD);
           html += `<div class="shift-cell" data-sidx="${sIdx}">`;
           if (cellMeta && cellMeta.note) {
             html += `<span class="tag-note"></span>`;
           }
-          html += `<div class="shift-pill ${pillClass}">${val}</div>`;
-          if (cellMeta && cellMeta.extraD) {
-            html += `<div class="cell-tags"><span class="tag-d">Д</span></div>`;
+          if (hasExtraD) {
+            html += `<div class="shift-pills-wrap dual"><div class="shift-pill ${pillClass}">${val}</div><div class="shift-pill s-d">Д</div></div>`;
+          } else {
+            html += `<div class="shift-pill ${pillClass}">${val}</div>`;
           }
           html += `</div>`;
         }
