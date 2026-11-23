@@ -824,6 +824,7 @@
       -webkit-user-select: none;
       user-select: none;
       -webkit-touch-callout: none;
+      touch-action: pan-y manipulation;
     }
 
     .week-days-grid {
@@ -1046,7 +1047,7 @@
         </button>
         <input id="backupInput" type="file" accept=".json" style="display:none" onchange="importBackup(event)" />
         <div class="version-footer" style="display:flex;align-items:center;justify-content:center;gap:8px;padding-top:6px;">
-          <span>Версія додатку: <b id="updateCheckStatus">v1.8.3</b></span>
+          <span>Версія додатку: <b id="updateCheckStatus">v1.8.4</b></span>
           <button type="button" title="Оновити сторінку / перевірити оновлення" onclick="haptic('light'); forceRefreshApp()" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--surface-2);color:var(--text);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;line-height:1;">↻</button>
         </div>
       </div>
@@ -1309,7 +1310,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'v1.8.3';
+    const APP_VERSION = 'v1.8.4';
     const SHIFTS = ['А', 'Б', 'В', 'Г', 'Д'];
     const EXAM_TYPES = ['ОП', 'ПБ', 'ПТЕ', 'НПАОП', 'РБ', 'ПНЯРБ'];
     const DOW_UA = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
@@ -1324,7 +1325,7 @@
       ['2', '2', '-', '-', '1']  // Д
     ];
 
-    const APP_BUILD = 183;
+    const APP_BUILD = 184;
     const DEFAULT_CUSTOM_WEEK = ['-', 'Р', 'Р', 'Р', 'Р', 'Р', '-'];
     const STORAGE_KEY = 'shift_schedule_pwa_v6';
 
@@ -1921,6 +1922,9 @@
     let pressingEl = null;
     let lastTapTime = 0;
     let lastTapKey = '';
+    let lastTapX = 0;
+    let lastTapY = 0;
+    let lastOpenedAt = 0;
 
     function clearPressState() {
       if (pressTimer) {
@@ -1933,13 +1937,15 @@
       }
     }
 
-    function triggerCellAction(iso, dateCell, shiftCell) {
+    function triggerCellAction(iso, isDateCell, sIdx) {
+      const now = Date.now();
+      if (now - lastOpenedAt < 350) return;
+      lastOpenedAt = now;
       haptic('long');
       selectRowDay(iso);
-      if (dateCell) {
+      if (isDateCell) {
         openDayModal(iso);
-      } else if (shiftCell) {
-        const sIdx = Number(shiftCell.dataset.sidx);
+      } else if (sIdx !== null && !Number.isNaN(sIdx)) {
         openCellModal(iso, sIdx);
       }
     }
@@ -1955,8 +1961,31 @@
         if (!targetCell) return;
 
         const row = targetCell.closest('.day-row');
-        if (!row) return;
+        if (!row || !row.dataset.date) return;
         const iso = row.dataset.date;
+        const isDateCell = Boolean(dateCell);
+        const sIdx = shiftCell ? Number(shiftCell.dataset.sidx) : null;
+        const tapKey = isDateCell ? (iso + '_d') : (iso + '_s_' + sIdx);
+        const now = Date.now();
+
+        // Check double tap immediately on 2nd pointerdown so long-press timer never interferes
+        if (
+          tapKey === lastTapKey &&
+          (now - lastTapTime) < 460 &&
+          Math.abs(e.clientX - lastTapX) < 28 &&
+          Math.abs(e.clientY - lastTapY) < 28
+        ) {
+          clearPressState();
+          lastTapTime = 0;
+          lastTapKey = '';
+          triggerCellAction(iso, isDateCell, sIdx);
+          return;
+        }
+
+        lastTapTime = now;
+        lastTapKey = tapKey;
+        lastTapX = e.clientX;
+        lastTapY = e.clientY;
 
         pressTriggered = false;
         pressStartX = e.clientX;
@@ -1968,14 +1997,17 @@
           pressTriggered = true;
           clearPressState();
           lastTapTime = 0;
-          triggerCellAction(iso, dateCell, shiftCell);
-        }, 420);
+          lastTapKey = '';
+          triggerCellAction(iso, isDateCell, sIdx);
+        }, 480);
       });
 
       container.addEventListener('pointermove', (e) => {
         if (!pressTimer) return;
-        if (Math.abs(e.clientX - pressStartX) > 10 || Math.abs(e.clientY - pressStartY) > 10) {
+        if (Math.abs(e.clientX - pressStartX) > 14 || Math.abs(e.clientY - pressStartY) > 14) {
           clearPressState();
+          lastTapTime = 0;
+          lastTapKey = '';
         }
       });
 
@@ -1983,27 +2015,32 @@
         const wasTimerActive = Boolean(pressTimer);
         clearPressState();
         if (wasTimerActive && !pressTriggered) {
-          const dateCell = e.target.closest('.date-cell');
-          const shiftCell = e.target.closest('.shift-cell');
           const row = e.target.closest('.day-row');
           if (row && row.dataset.date) {
-            const iso = row.dataset.date;
-            const tapKey = dateCell ? (iso + '_d') : (iso + '_s_' + (shiftCell ? shiftCell.dataset.sidx : ''));
-            const now = Date.now();
-            if (tapKey === lastTapKey && (now - lastTapTime) < 340) {
-              lastTapTime = 0;
-              lastTapKey = '';
-              triggerCellAction(iso, dateCell, shiftCell);
-            } else {
-              lastTapTime = now;
-              lastTapKey = tapKey;
-              selectRowDay(iso);
-            }
+            selectRowDay(row.dataset.date);
           }
         }
       });
 
-      container.addEventListener('pointercancel', clearPressState);
+      container.addEventListener('pointercancel', () => {
+        clearPressState();
+      });
+
+      container.addEventListener('dblclick', (e) => {
+        const dateCell = e.target.closest('.date-cell');
+        const shiftCell = e.target.closest('.shift-cell');
+        const row = e.target.closest('.day-row');
+        if (!row || !row.dataset.date) return;
+        if (!dateCell && !shiftCell) return;
+        e.preventDefault();
+        clearPressState();
+        triggerCellAction(
+          row.dataset.date,
+          Boolean(dateCell),
+          shiftCell ? Number(shiftCell.dataset.sidx) : null
+        );
+      });
+
       container.addEventListener('contextmenu', (e) => {
         if (e.target.closest('.day-row')) e.preventDefault();
       });
