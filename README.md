@@ -13,6 +13,6 @@
 ## Файли проєкту
 - `index.html` — головний файл додатку
 - `manifest.json` — маніфест PWA для встановлення на головний екран Android / iOS / ПК
-- `sw.js` — Service Worker для офлайн-роботи
+- `sw.js` — Service Worker для офлайн-роботи (Network First для HTML)
 - `icon-192.png` — іконка додатку 192×192
 - `icon-512.png` — іконка додатку 512×512
