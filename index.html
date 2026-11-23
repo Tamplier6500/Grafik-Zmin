@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#1976d2" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Графік змін" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <title>Графік змін</title>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --header-bg: #1976d2;
+      --header-text: #ffffff;
+      --thead-bg: #e2e8f0;
+      --thead-text: #0f172a;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --today-bg: #dbeafe;
+      --today-border: #2563eb;
+      --selected-bg: #fef9c3;
+      --weekend-bg: #f8fafc;
+
+      --s1-bg: #e0f2fe;
+      --s1-text: #0369a1;
+      --s1-border: #7dd3fc;
+
+      --s2-bg: #ffedd5;
+      --s2-text: #c2410c;
+      --s2-border: #fdba74;
+
+      --s3-bg: #ede9fe;
+      --s3-text: #6d28d9;
+      --s3-border: #c4b5fd;
+
+      --soff-bg: #f1f5f9;
+      --soff-text: #64748b;
+      --soff-border: #cbd5e1;
+
+      --top-bar-h: 52px;
+      --thead-h: 42px;
+      --bottom-bar-h: 58px;
+    }
+
+    body.dark {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-2: #1e293b;
+      --header-bg: #1e3a8a;
+      --header-text: #f8fafc;
+      --thead-bg: #1e293b;
+      --thead-text: #e2e8f0;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --today-bg: #172554;
+      --today-border: #3b82f6;
+      --selected-bg: #422006;
+      --weekend-bg: #0f172a;
+
+      --s1-bg: #0c2d48;
+      --s1-text: #38bdf8;
+      --s1-border: #0284c7;
+
+      --s2-bg: #431407;
+      --s2-text: #fb923c;
+      --s2-border: #ea580c;
+
+      --s3-bg: #2e1065;
+      --s3-text: #c084fc;
+      --s3-border: #7c3aed;
+
+      --soff-bg: #1e293b;
+      --soff-text: #94a3b8;
+      --soff-border: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    /* Fixed Top App Bar */
+    .app-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: calc(var(--top-bar-h) + env(safe-area-inset-top));
+      padding-top: env(safe-area-inset-top);
+      background: var(--header-bg);
+      color: var(--header-text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 12px;
+      padding-right: 12px;
+      z-index: 40;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+    }
+
+    .app-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      border-radius: 10px;
+      height: 36px;
+      padding: 0 11px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Fixed Column Header Bar (eliminates overlap with 1st day row) */
+    .grid-header {
+      position: fixed;
+      top: calc(var(--top-bar-h) + env(safe-area-inset-top));
+      left: 0;
+      right: 0;
+      height: var(--thead-h);
+      background: var(--thead-bg);
+      color: var(--thead-text);
+      border-bottom: 2px solid var(--border);
+      display: grid;
+      grid-template-columns: 74px repeat(5, 1fr);
+      align-items: center;
+      z-index: 35;
+      font-weight: 700;
+      font-size: 15px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    .grid-header div {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-right: 1px solid var(--border);
+    }
+
+    .grid-header div:last-child {
+      border-right: none;
+    }
+
+    /* Scrollable Schedule Area strictly bounded between grid-header and bottom-bar */
+    .schedule-scroll {
+      position: fixed;
+      top: calc(var(--top-bar-h) + var(--thead-h) + env(safe-area-inset-top));
+      bottom: calc(var(--bottom-bar-h) + env(safe-area-inset-bottom));
+      left: 0;
+      right: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      background: var(--surface);
+      scroll-padding-top: 8px;
+      scroll-padding-bottom: 12px;
+    }
+
+    .day-row {
+      display: grid;
+      grid-template-columns: 74px repeat(5, 1fr);
+      min-height: 54px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      transition: background 0.15s;
+    }
+
+    .day-row.weekend {
+      background: var(--weekend-bg);
+    }
+
+    .day-row.today {
+      background: var(--today-bg);
+      box-shadow: inset 3px 0 0 var(--today-border);
+    }
+
+    .day-row.selected {
+      background: var(--selected-bg);
+      outline: 2px solid #eab308;
+      outline-offset: -2px;
+    }
+
+    .date-cell {
+      padding: 4px 4px;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+
+    .date-num {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.15;
+    }
+
+    .date-dow {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.15;
+    }
+
+    .day-row.weekend .date-dow,
+    .day-row.weekend .date-num {
+      color: #ef4444;
+    }
+
+    .day-row.today .date-num {
+      color: var(--today-border);
+    }
+
+    .date-badges {
+      display: flex;
+      gap: 2px;
+      margin-top: 2px;
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    .shift-cell {
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 2px;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+
+    .shift-cell:last-child {
+      border-right: none;
+    }
+
+    .shift-pill {
+      width: 34px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 800;
+      border: 1.5px solid transparent;
+    }
+
+    .s-1 {
+      background: var(--s1-bg);
+      color: var(--s1-text);
+      border-color: var(--s1-border);
+    }
+
+    .s-2 {
+      background: var(--s2-bg);
+      color: var(--s2-text);
+      border-color: var(--s2-border);
+    }
+
+    .s-3 {
+      background: var(--s3-bg);
+      color: var(--s3-text);
+      border-color: var(--s3-border);
+    }
+
+    .s-off {
+      background: var(--soff-bg);
+      color: var(--soff-text);
+      border-color: var(--soff-border);
+    }
+
+    .cell-tags {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2px;
+      margin-top: 2px;
+      max-width: 100%;
+    }
+
+    .tag-d {
+      background: #dc2626;
+      color: #fff;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 1px 4px;
+      border-radius: 4px;
+      line-height: 1.1;
+    }
+
+    .tag-exam {
+      background: #059669;
+      color: #fff;
+      font-size: 8.5px;
+      font-weight: 700;
+      padding: 1px 3px;
+      border-radius: 4px;
+      line-height: 1.1;
+    }
+
+    .tag-note {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #f59e0b;
+      position: absolute;
+      top: 4px;
+      right: 4px;
+    }
+
+    /* Bottom Navigation Bar (Clean styling + 1-row << < MM.YYYY > >> logic) */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: calc(var(--bottom-bar-h) + env(safe-area-inset-bottom));
+      padding-bottom: env(safe-area-inset-bottom);
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 10px;
+      padding-right: 10px;
+      gap: 6px;
+      z-index: 40;
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .nav-btn {
+      height: 40px;
+      min-width: 48px;
+      padding: 0 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    .nav-btn:active {
+      background: var(--today-bg);
+      border-color: var(--today-border);
+      transform: scale(0.96);
+    }
+
+    .nav-center {
+      flex: 1;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .nav-center:active {
+      background: var(--today-bg);
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 100;
+      padding: 12px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    @media (min-width: 540px) {
+      .modal-backdrop {
+        align-items: center;
+      }
+    }
+
+    .modal-card {
+      background: var(--surface);
+      color: var(--text);
+      width: 100%;
+      max-width: 480px;
+      max-height: 88vh;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 22px;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+
+    .modal-body {
+      padding: 14px 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      background: var(--surface-2);
+    }
+
+    .btn {
+      padding: 9px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: #1976d2;
+      color: #ffffff;
+      border-color: #1565c0;
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #b91c1c;
+    }
+
+    .menu-item {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .menu-item.install-highlight {
+      background: #eff6ff;
+      border-color: #3b82f6;
+      color: #1d4ed8;
+    }
+
+    body.dark .menu-item.install-highlight {
+      background: #172554;
+      border-color: #3b82f6;
+      color: #93c5fd;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 9px 11px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .chip-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      padding: 7px 11px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .chip.active {
+      background: #1976d2;
+      color: #fff;
+      border-color: #1976d2;
+    }
+
+    .chip.active-d {
+      background: #dc2626;
+      color: #fff;
+      border-color: #dc2626;
+    }
+
+    .chip.active-exam {
+      background: #059669;
+      color: #fff;
+      border-color: #059669;
+    }
+
+    .pattern-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    .offset-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      text-align: center;
+    }
+
+    .list-item {
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .hint-box {
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: var(--text-muted);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="app-header">
+    <div class="app-title">📅 Графік змін</div>
+    <div class="header-actions">
+      <button id="headerInstallBtn" class="icon-btn" style="display:none;" onclick="triggerInstall()">📲 Встановити</button>
+      <button class="icon-btn" onclick="openModal('menuModal')">☰ Меню</button>
+    </div>
+  </header>
+
+  <!-- Fixed 6-column Table Header -->
+  <div class="grid-header" role="row">
+    <div>Дата</div>
+    <div>А</div>
+    <div>Б</div>
+    <div>В</div>
+    <div>Г</div>
+    <div>Д</div>
+  </div>
+
+  <!-- Scrollable Schedule Table -->
+  <main id="scheduleScroll" class="schedule-scroll"></main>
+
+  <!-- Bottom 1-Row Navigation Bar -->
+  <nav class="bottom-nav" aria-label="Навігація по датах">
+    <button class="nav-btn" title="Попередній місяць" onclick="shiftMonth(-1)">&lt;&lt;</button>
+    <button class="nav-btn" title="Попередній день" onclick="shiftDay(-1)">&lt;</button>
+    <button id="monthYearBtn" class="nav-center" title="Повернутися на сьогодні" onclick="goToday()">01.2026</button>
+    <button class="nav-btn" title="Наступний день" onclick="shiftDay(1)">&gt;</button>
+    <button class="nav-btn" title="Наступний місяць" onclick="shiftMonth(1)">&gt;&gt;</button>
+  </nav>
+
+  <!-- Main Menu Modal -->
+  <div id="menuModal" class="modal-backdrop" onclick="backdropClose(event, 'menuModal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span>Меню</span>
+        <button class="modal-close" onclick="closeModal('menuModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <button id="menuInstallBtn" class="menu-item install-highlight" onclick="triggerInstall()">
+          <span>📲 Додати на головний екран (PWA)</span>
+          <span>›</span>
+        </button>
+        <button class="menu-item" onclick="closeModal('menuModal'); openPatternModal();">
+          <span>⚙️ Налаштування порядку змін</span>
+          <span>›</span>
+        </button>
+        <button class="menu-item" onclick="closeModal('menuModal'); openBirthdaysModal();">
+          <span>🎂 Дні народження (імпорт Excel)</span>
+          <span>›</span>
+        </button>
+        <button class="menu-item" onclick="toggleTheme()">
+          <span>🌓 Змінити тему (світла / темна)</span>
+          <span id="themeLabel">Світла</span>
+        </button>
+        <button class="menu-item" onclick="exportBackup()">
+          <span>💾 Експорт резервної копії (JSON)</span>
+          <span>›</span>
+        </button>
+        <button class="menu-item" onclick="document.getElementById('backupInput').click()">
+          <span>📂 Відновити з копії (JSON)</span>
+          <span>›</span>
+        </button>
+        <input id="backupInput" type="file" accept=".json" style="display:none" onchange="importBackup(event)" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Install Instructions Modal (Fallback when browser blocks auto-prompt) -->
+  <div id="installHelpModal" class="modal-backdrop" onclick="backdropClose(event, 'installHelpModal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span>Встановлення на робочий стіл</span>
+        <button class="modal-close" onclick="closeModal('installHelpModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="installStatusText" class="hint-box"></div>
+        <div class="hint-box">
+          <strong>Android (Google Chrome):</strong><br/>
+          1. Відкрийте сайт за посиланням <b>https://</b> (наприклад, на GitHub Pages або Vercel).<br/>
+          2. Натисніть <b>⋮</b> (три крапки у правому верхньому куті браузера).<br/>
+          3. Оберіть <b>«Додати на головний екран»</b> або <b>«Встановити додаток»</b>.
+        </div>
+        <div class="hint-box">
+          <strong>iPhone / iPad (Safari):</strong><br/>
+          1. Натисніть кнопку <b>«Поділитися»</b> (квадрат зі стрілкою вгору).<br/>
+          2. Прогорніть вниз і натисніть <b>«На початковий екран»</b>.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeModal('installHelpModal')">Зрозуміло</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cell Edit Modal (Д, Екзамени, Перевизначення зміни) -->
+  <div id="cellModal" class="modal-backdrop" onclick="backdropClose(event, 'cellModal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span id="cellModalTitle">Зміна А — 01.01.2026</span>
+        <button class="modal-close" onclick="closeModal('cellModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="field-group">
+          <div class="field-label">Номер зміни на цей день</div>
+          <div id="shiftOverrideChips" class="chip-grid">
+            <div class="chip" data-val="auto" onclick="selectOverride('auto')">За графіком</div>
+            <div class="chip" data-val="1" onclick="selectOverride('1')">1</div>
+            <div class="chip" data-val="2" onclick="selectOverride('2')">2</div>
+            <div class="chip" data-val="3" onclick="selectOverride('3')">3</div>
+            <div class="chip" data-val="-" onclick="selectOverride('-')">- (Вих.)</div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Додатковий день</div>
+          <div class="chip-grid">
+            <div id="chipExtraD" class="chip" onclick="toggleExtraD()">Д — Додатковий день</div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Екзамени (можна обрати декілька)</div>
+          <div id="examChips" class="chip-grid">
+            <div class="chip" data-exam="ОП" onclick="toggleExam('ОП')">ОП</div>
+            <div class="chip" data-exam="ПБ" onclick="toggleExam('ПБ')">ПБ</div>
+            <div class="chip" data-exam="ПТЕ" onclick="toggleExam('ПТЕ')">ПТЕ</div>
+            <div class="chip" data-exam="НПАОП" onclick="toggleExam('НПАОП')">НПАОП</div>
+            <div class="chip" data-exam="РБ" onclick="toggleExam('РБ')">РБ</div>
+            <div class="chip" data-exam="ПНЯРБ" onclick="toggleExam('ПНЯРБ')">ПНЯРБ</div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Примітка до клітинки</div>
+          <input id="cellNoteInput" type="text" placeholder="Наприклад: підміна, інструктаж..." />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="clearCellData()">Очистити</button>
+        <button class="btn btn-primary" onclick="saveCellData()">Зберегти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day Events & Birthdays Modal -->
+  <div id="dayModal" class="modal-backdrop" onclick="backdropClose(event, 'dayModal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span id="dayModalTitle">Події на 01.01.2026</span>
+        <button class="modal-close" onclick="closeModal('dayModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="dayBirthdaysBox" style="display:none;">
+          <div class="field-label" style="margin-bottom:4px;">🎂 Дні народження цього дня:</div>
+          <div id="dayBirthdaysList" style="display:flex;flex-direction:column;gap:4px;"></div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Події на обрану дату</div>
+          <div id="dayEventsList" style="display:flex;flex-direction:column;gap:6px;"></div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Додати нову подію</div>
+          <div style="display:flex;gap:6px;">
+            <input id="newEventInput" type="text" placeholder="Назва події..." />
+            <button class="btn btn-primary" onclick="addDayEvent()">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeModal('dayModal')">Закрити</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pattern Settings Modal -->
+  <div id="patternModal" class="modal-backdrop" onclick="backdropClose(event, 'patternModal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span>Налаштування порядку змін</span>
+        <button class="modal-close" onclick="closeModal('patternModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="hint-box">
+          Стандартний цикл (15 днів): <b>1, 1, 1, -, -, 3, 3, 3, -, -, 2, 2, 2, -, -</b>, далі повтор. Ви можете задати свій шаблон на 5 або більше днів і зсув для кожної зміни (А–Д).
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div class="field-group">
+            <div class="field-label">Опорна дата початку</div>
+            <input id="cfgAnchorDate" type="date" />
+          </div>
+          <div class="field-group">
+            <div class="field-label">Довжина циклу (днів)</div>
+            <div style="display:flex;gap:4px;">
+              <input id="cfgCycleLen" type="number" min="5" max="30" onchange="rebuildPatternInputs()" />
+              <button class="btn" title="5-денний шаблон" onclick="setCycleLen(5)">5</button>
+              <button class="btn" title="15-денний стандарт" onclick="setCycleLen(15)">15</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Порядок змін у циклі (День 1, 2, 3...)</div>
+          <div id="patternDaysGrid" class="pattern-row"></div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Зсув старту (в днях) для кожної зміни</div>
+          <div class="offset-grid">
+            <div><div class="field-label">Зміна А</div><input id="off_0" type="number" min="0" max="29" /></div>
+            <div><div class="field-label">Зміна Б</div><input id="off_1" type="number" min="0" max="29" /></div>
+            <div><div class="field-label">Зміна В</div><input id="off_2" type="number" min="0" max="29" /></div>
+            <div><div class="field-label">Зміна Г</div><input id="off_3" type="number" min="0" max="29" /></div>
+            <div><div class="field-label">Зміна Д</div><input id="off_4" type="number" min="0" max="29" /></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="resetDefaultPattern()">За замовчуванням</button>
+        <button class="btn btn-primary" onclick="savePatternSettings()">Застосувати</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Birthdays Excel Import Modal -->
+  <div id="birthdaysModal" class="modal-backdrop" onclick="backdropClose(event, 'birthdaysModal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span>Дні народження (Excel)</span>
+        <button class="modal-close" onclick="closeModal('birthdaysModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="hint-box">
+          Завантажте файл <b>.xlsx</b>, <b>.xls</b> або <b>.csv</b> з двома колонками: <b>Дата</b> (ДД.ММ або ДД.ММ.РРРР) та <b>ПІБ / Ім'я</b> (необов'язково 3-тя колонка: <b>Зміна</b> А–Д).
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="document.getElementById('excelFileInput').click()">📥 Завантажити Excel</button>
+          <button class="btn" onclick="downloadExcelTemplate()">📄 Шаблон Excel</button>
+          <button class="btn btn-danger" onclick="clearBirthdays()">🗑 Очистити</button>
+          <input id="excelFileInput" type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleExcelImport(event)" />
+        </div>
+
+        <div class="field-label" id="bdayCountLabel">Завантажено записів: 0</div>
+        <div id="bdayPreviewList" style="display:flex;flex-direction:column;gap:5px;max-height:220px;overflow-y:auto;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeModal('birthdaysModal')">Закрити</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SHIFTS = ['А', 'Б', 'В', 'Г', 'Д'];
+    const DOW_UA = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+    const DEFAULT_PATTERN = ['1','1','1','-','-','3','3','3','-','-','2','2','2','-','-'];
+
+    const STORAGE_KEY = 'shift_schedule_pwa_v2';
+
+    let state = {
+      theme: 'light',
+      anchorDate: '2026-01-01',
+      pattern: [...DEFAULT_PATTERN],
+      offsets: [0, 3, 6, 9, 12],
+      cells: {},      // "YYYY-MM-DD_0": { override: '1'|'2'|'3'|'-'|null, extraD: bool, exams: [], note: '' }
+      events: {},     // "YYYY-MM-DD": [ "Текст події" ]
+      birthdays: []   // [ { mmdd: "05-14", name: "Іванов І.І.", shift: "А" } ]
+    };
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let viewYear = today.getFullYear();
+    let viewMonth = today.getMonth();
+    let selectedDateStr = toISODate(today);
+
+    let editingCellKey = null;
+    let tempCellData = { override: null, extraD: false, exams: [], note: '' };
+    let editingDayStr = null;
+    let deferredInstallPrompt = null;
+
+    // --- Service Worker & PWA Install Handling ---
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      document.getElementById('headerInstallBtn').style.display = 'inline-flex';
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredInstallPrompt = null;
+      document.getElementById('headerInstallBtn').style.display = 'none';
+    });
+
+    async function triggerInstall() {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        const choice = await deferredInstallPrompt.userChoice;
+        if (choice.outcome === 'accepted') {
+          deferredInstallPrompt = null;
+          document.getElementById('headerInstallBtn').style.display = 'none';
+        }
+        closeModal('menuModal');
+        return;
+      }
+
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+      const isHttps = location.protocol === 'https:' || location.hostname === 'localhost';
+      const statusEl = document.getElementById('installStatusText');
+
+      if (isStandalone) {
+        statusEl.innerHTML = '✅ Додаток вже встановлено та запущено у повноекранному режимі.';
+      } else if (!isHttps) {
+        statusEl.innerHTML = '⚠️ Зараз файл відкрито локально (<code>' + location.protocol + '</code>). Для появи системної кнопки встановлення завантажте файли на <b>GitHub Pages</b> або <b>Vercel</b> (по протоколу <b>https://</b>).';
+      } else {
+        statusEl.innerHTML = 'ℹ️ Браузер дозволяє встановити додаток вручну через меню браузера (інструкція нижче).';
+      }
+
+      closeModal('menuModal');
+      openModal('installHelpModal');
+    }
+
+    // --- Storage ---
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          state = { ...state, ...parsed };
+        }
+      } catch (e) {}
+      applyTheme();
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function applyTheme() {
+      document.body.classList.toggle('dark', state.theme === 'dark');
+      const lbl = document.getElementById('themeLabel');
+      if (lbl) lbl.textContent = state.theme === 'dark' ? 'Темна' : 'Світла';
+    }
+
+    function toggleTheme() {
+      state.theme = state.theme === 'dark' ? 'light' : 'dark';
+      applyTheme();
+      saveState();
+    }
+
+    // --- Date Helpers ---
+    function pad2(n) {
+      return String(n).padStart(2, '0');
+    }
+
+    function toISODate(d) {
+      return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+    }
+
+    function parseISODate(str) {
+      const [y, m, d] = str.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    function formatDisplayDate(str) {
+      const [y, m, d] = str.split('-');
+      return `${d}.${m}.${y}`;
+    }
+
+    function diffDays(d1, d2) {
+      const utc1 = Date.UTC(d1.getFullYear(), d1.getMonth(), d1.getDate());
+      const utc2 = Date.UTC(d2.getFullYear(), d2.getMonth(), d2.getDate());
+      return Math.floor((utc2 - utc1) / 86400000);
+    }
+
+    // --- Shift Calculation ---
+    function getScheduledShift(dateObj, shiftIdx) {
+      const anchor = parseISODate(state.anchorDate || '2026-01-01');
+      const len = state.pattern.length || 15;
+      const offset = Number(state.offsets[shiftIdx] || 0);
+      const delta = diffDays(anchor, dateObj) + offset;
+      const idx = ((delta % len) + len) % len;
+      return state.pattern[idx] || '-';
+    }
+
+    // --- Render Schedule ---
+    function renderSchedule(scrollTargetDateStr = null) {
+      const container = document.getElementById('scheduleScroll');
+      const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+      const todayStr = toISODate(today);
+
+      document.getElementById('monthYearBtn').textContent = `${pad2(viewMonth + 1)}.${viewYear}`;
+
+      let html = '';
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dObj = new Date(viewYear, viewMonth, day);
+        const iso = toISODate(dObj);
+        const mmdd = `${pad2(viewMonth + 1)}-${pad2(day)}`;
+        const dow = dObj.getDay();
+        const isWeekend = dow === 0 || dow === 6;
+        const isToday = iso === todayStr;
+        const isSelected = iso === selectedDateStr;
+
+        const dayEvents = state.events[iso] || [];
+        const dayBdays = state.birthdays.filter((b) => b.mmdd === mmdd);
+
+        const rowClasses = ['day-row'];
+        if (isWeekend) rowClasses.push('weekend');
+        if (isToday) rowClasses.push('today');
+        if (isSelected) rowClasses.push('selected');
+
+        html += `<div class="${rowClasses.join(' ')}" data-date="${iso}">`;
+        html += `<div class="date-cell" onclick="openDayModal('${iso}')">`;
+        html += `<span class="date-num">${pad2(day)}.${pad2(viewMonth + 1)}</span>`;
+        html += `<span class="date-dow">${DOW_UA[dow]}</span>`;
+        if (dayEvents.length || dayBdays.length) {
+          html += `<div class="date-badges">`;
+          if (dayEvents.length) html += `<span>📌</span>`;
+          if (dayBdays.length) html += `<span>🎂</span>`;
+          html += `</div>`;
+        }
+        html += `</div>`;
+
+        for (let sIdx = 0; sIdx < 5; sIdx++) {
+          const cellKey = `${iso}_${sIdx}`;
+          const cellMeta = state.cells[cellKey];
+          const val = (cellMeta && cellMeta.override) ? cellMeta.override : getScheduledShift(dObj, sIdx);
+          const pillClass = val === '1' ? 's-1' : val === '2' ? 's-2' : val === '3' ? 's-3' : 's-off';
+
+          html += `<div class="shift-cell" onclick="openCellModal('${iso}', ${sIdx})">`;
+          if (cellMeta && cellMeta.note) {
+            html += `<span class="tag-note"></span>`;
+          }
+          html += `<div class="shift-pill ${pillClass}">${val}</div>`;
+          if (cellMeta && (cellMeta.extraD || (cellMeta.exams && cellMeta.exams.length))) {
+            html += `<div class="cell-tags">`;
+            if (cellMeta.extraD) html += `<span class="tag-d">Д</span>`;
+            if (cellMeta.exams && cellMeta.exams.length) {
+              cellMeta.exams.forEach((ex) => {
+                html += `<span class="tag-exam">${ex}</span>`;
+              });
+            }
+            html += `</div>`;
+          }
+          html += `</div>`;
+        }
+
+        html += `</div>`;
+      }
+
+      container.innerHTML = html;
+
+      if (scrollTargetDateStr) {
+        requestAnimationFrame(() => {
+          const row = container.querySelector(`.day-row[data-date="${scrollTargetDateStr}"]`);
+          if (row) {
+            row.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          } else {
+            container.scrollTop = 0;
+          }
+        });
+      }
+    }
+
+    // --- Bottom Bar Navigation Logic ---
+    function shiftDay(delta) {
+      const cur = parseISODate(selectedDateStr);
+      cur.setDate(cur.getDate() + delta);
+      selectedDateStr = toISODate(cur);
+      viewYear = cur.getFullYear();
+      viewMonth = cur.getMonth();
+      renderSchedule(selectedDateStr);
+    }
+
+    function shiftMonth(delta) {
+      const cur = parseISODate(selectedDateStr);
+      const targetDay = cur.getDate();
+      const targetMonthDate = new Date(viewYear, viewMonth + delta, 1);
+      const maxDay = new Date(targetMonthDate.getFullYear(), targetMonthDate.getMonth() + 1, 0).getDate();
+      targetMonthDate.setDate(Math.min(targetDay, maxDay));
+
+      viewYear = targetMonthDate.getFullYear();
+      viewMonth = targetMonthDate.getMonth();
+      selectedDateStr = toISODate(targetMonthDate);
+      renderSchedule(selectedDateStr);
+    }
+
+    function goToday() {
+      viewYear = today.getFullYear();
+      viewMonth = today.getMonth();
+      selectedDateStr = toISODate(today);
+      renderSchedule(selectedDateStr);
+    }
+
+    // --- Modals Utility ---
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    function backdropClose(e, id) {
+      if (e.target.id === id) closeModal(id);
+    }
+
+    // --- Cell Editor ---
+    function openCellModal(iso, sIdx) {
+      selectedDateStr = iso;
+      editingCellKey = `${iso}_${sIdx}`;
+      const existing = state.cells[editingCellKey] || { override: null, extraD: false, exams: [], note: '' };
+      tempCellData = {
+        override: existing.override || null,
+        extraD: Boolean(existing.extraD),
+        exams: [...(existing.exams || [])],
+        note: existing.note || ''
+      };
+
+      document.getElementById('cellModalTitle').textContent = `Зміна ${SHIFTS[sIdx]} — ${formatDisplayDate(iso)}`;
+      document.getElementById('cellNoteInput').value = tempCellData.note;
+      syncCellModalUI();
+      openModal('cellModal');
+    }
+
+    function syncCellModalUI() {
+      const ovVal = tempCellData.override || 'auto';
+      document.querySelectorAll('#shiftOverrideChips .chip').forEach((el) => {
+        el.classList.toggle('active', el.dataset.val === ovVal);
+      });
+      document.getElementById('chipExtraD').classList.toggle('active-d', tempCellData.extraD);
+      document.querySelectorAll('#examChips .chip').forEach((el) => {
+        el.classList.toggle('active-exam', tempCellData.exams.includes(el.dataset.exam));
+      });
+    }
+
+    function selectOverride(val) {
+      tempCellData.override = val === 'auto' ? null : val;
+      syncCellModalUI();
+    }
+
+    function toggleExtraD() {
+      tempCellData.extraD = !tempCellData.extraD;
+      syncCellModalUI();
+    }
+
+    function toggleExam(exam) {
+      const idx = tempCellData.exams.indexOf(exam);
+      if (idx >= 0) tempCellData.exams.splice(idx, 1);
+      else tempCellData.exams.push(exam);
+      syncCellModalUI();
+    }
+
+    function saveCellData() {
+      tempCellData.note = document.getElementById('cellNoteInput').value.trim();
+      const isEmpty = !tempCellData.override && !tempCellData.extraD && tempCellData.exams.length === 0 && !tempCellData.note;
+      if (isEmpty) {
+        delete state.cells[editingCellKey];
+      } else {
+        state.cells[editingCellKey] = { ...tempCellData };
+      }
+      saveState();
+      closeModal('cellModal');
+      renderSchedule();
+    }
+
+    function clearCellData() {
+      delete state.cells[editingCellKey];
+      saveState();
+      closeModal('cellModal');
+      renderSchedule();
+    }
+
+    // --- Day Events & Birthdays ---
+    function openDayModal(iso) {
+      selectedDateStr = iso;
+      editingDayStr = iso;
+      document.getElementById('dayModalTitle').textContent = `Дата: ${formatDisplayDate(iso)}`;
+      document.getElementById('newEventInput').value = '';
+      renderDayModalLists();
+      openModal('dayModal');
+    }
+
+    function renderDayModalLists() {
+      const mmdd = editingDayStr.slice(5);
+      const bdays = state.birthdays.filter((b) => b.mmdd === mmdd);
+      const bBox = document.getElementById('dayBirthdaysBox');
+      const bList = document.getElementById('dayBirthdaysList');
+
+      if (bdays.length) {
+        bBox.style.display = 'block';
+        bList.innerHTML = bdays
+          .map((b) => `<div class="list-item"><span>🎂 <b>${escapeHtml(b.name)}</b>${b.shift ? ` (Зміна ${escapeHtml(b.shift)})` : ''}</span></div>`)
+          .join('');
+      } else {
+        bBox.style.display = 'none';
+      }
+
+      const evs = state.events[editingDayStr] || [];
+      const eList = document.getElementById('dayEventsList');
+      if (!evs.length) {
+        eList.innerHTML = `<div style="font-size:13px;color:var(--text-muted);">Немає запланованих подій</div>`;
+      } else {
+        eList.innerHTML = evs
+          .map(
+            (ev, idx) =>
+              `<div class="list-item"><span>📌 ${escapeHtml(ev)}</span><button class="btn btn-danger" style="padding:4px 8px;font-size:12px;" onclick="removeDayEvent(${idx})">✕</button></div>`
+          )
+          .join('');
+      }
+    }
+
+    function addDayEvent() {
+      const input = document.getElementById('newEventInput');
+      const text = input.value.trim();
+      if (!text) return;
+      if (!state.events[editingDayStr]) state.events[editingDayStr] = [];
+      state.events[editingDayStr].push(text);
+      input.value = '';
+      saveState();
+      renderDayModalLists();
+      renderSchedule();
+    }
+
+    function removeDayEvent(idx) {
+      if (!state.events[editingDayStr]) return;
+      state.events[editingDayStr].splice(idx, 1);
+      if (!state.events[editingDayStr].length) delete state.events[editingDayStr];
+      saveState();
+      renderDayModalLists();
+      renderSchedule();
+    }
+
+    // --- Pattern Settings ---
+    function openPatternModal() {
+      document.getElementById('cfgAnchorDate').value = state.anchorDate;
+      document.getElementById('cfgCycleLen').value = state.pattern.length;
+      for (let i = 0; i < 5; i++) {
+        document.getElementById(`off_${i}`).value = state.offsets[i] ?? 0;
+      }
+      renderPatternSelects(state.pattern);
+      openModal('patternModal');
+    }
+
+    function setCycleLen(len) {
+      document.getElementById('cfgCycleLen').value = len;
+      rebuildPatternInputs();
+    }
+
+    function rebuildPatternInputs() {
+      let len = parseInt(document.getElementById('cfgCycleLen').value, 10) || 15;
+      len = Math.max(5, Math.min(30, len));
+      document.getElementById('cfgCycleLen').value = len;
+      const currentVals = Array.from(document.querySelectorAll('.pat-day-sel')).map((s) => s.value);
+      const nextPattern = [];
+      for (let i = 0; i < len; i++) {
+        nextPattern.push(currentVals[i] || DEFAULT_PATTERN[i % DEFAULT_PATTERN.length]);
+      }
+      renderPatternSelects(nextPattern);
+    }
+
+    function renderPatternSelects(arr) {
+      const grid = document.getElementById('patternDaysGrid');
+      grid.innerHTML = arr
+        .map(
+          (val, idx) => `
+          <div>
+            <div style="font-size:10px;color:var(--text-muted);text-align:center;">День ${idx + 1}</div>
+            <select class="pat-day-sel">
+              <option value="1" ${val === '1' ? 'selected' : ''}>1</option>
+              <option value="2" ${val === '2' ? 'selected' : ''}>2</option>
+              <option value="3" ${val === '3' ? 'selected' : ''}>3</option>
+              <option value="-" ${val === '-' ? 'selected' : ''}>-</option>
+            </select>
+          </div>`
+        )
+        .join('');
+    }
+
+    function resetDefaultPattern() {
+      document.getElementById('cfgAnchorDate').value = '2026-01-01';
+      document.getElementById('cfgCycleLen').value = 15;
+      const defOffsets = [0, 3, 6, 9, 12];
+      for (let i = 0; i < 5; i++) {
+        document.getElementById(`off_${i}`).value = defOffsets[i];
+      }
+      renderPatternSelects(DEFAULT_PATTERN);
+    }
+
+    function savePatternSettings() {
+      const anchor = document.getElementById('cfgAnchorDate').value || '2026-01-01';
+      const sels = Array.from(document.querySelectorAll('.pat-day-sel')).map((s) => s.value);
+      const offsets = [];
+      for (let i = 0; i < 5; i++) {
+        offsets.push(parseInt(document.getElementById(`off_${i}`).value, 10) || 0);
+      }
+      state.anchorDate = anchor;
+      state.pattern = sels.length ? sels : [...DEFAULT_PATTERN];
+      state.offsets = offsets;
+      saveState();
+      closeModal('patternModal');
+      renderSchedule();
+    }
+
+    // --- Birthdays Excel Import ---
+    function openBirthdaysModal() {
+      renderBirthdaysList();
+      openModal('birthdaysModal');
+    }
+
+    function renderBirthdaysList() {
+      document.getElementById('bdayCountLabel').textContent = `Завантажено записів: ${state.birthdays.length}`;
+      const list = document.getElementById('bdayPreviewList');
+      if (!state.birthdays.length) {
+        list.innerHTML = `<div style="font-size:13px;color:var(--text-muted);">Список порожній</div>`;
+        return;
+      }
+      list.innerHTML = state.birthdays
+        .slice(0, 100)
+        .map((b) => {
+          const [mm, dd] = b.mmdd.split('-');
+          return `<div class="list-item"><span><b>${dd}.${mm}</b> — ${escapeHtml(b.name)}</span><span>${b.shift ? 'Зміна ' + escapeHtml(b.shift) : ''}</span></div>`;
+        })
+        .join('');
+    }
+
+    function parseExcelBirthdayDate(rawVal) {
+      if (rawVal === null || rawVal === undefined || rawVal === '') return null;
+      if (typeof rawVal === 'number' && window.XLSX) {
+        const d = XLSX.SSF.parse_date_code(rawVal);
+        if (d && d.m && d.d) return `${pad2(d.m)}-${pad2(d.d)}`;
+      }
+      const str = String(rawVal).trim();
+      const dotMatch = str.match(/^(\d{1,2})[./-](\d{1,2})(?:[./-]\d{2,4})?$/);
+      if (dotMatch) {
+        const d = parseInt(dotMatch[1], 10);
+        const m = parseInt(dotMatch[2], 10);
+        if (m >= 1 && m <= 12 && d >= 1 && d <= 31) return `${pad2(m)}-${pad2(d)}`;
+      }
+      const isoMatch = str.match(/^\d{4}-(\d{2})-(\d{2})/);
+      if (isoMatch) return `${isoMatch[1]}-${isoMatch[2]}`;
+      return null;
+    }
+
+    function handleExcelImport(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (!window.XLSX) {
+        alert('Бібліотека Excel ще завантажується або відсутній інтернет. Спробуйте CSV або підключіться до мережі.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function (evt) {
+        try {
+          const data = new Uint8Array(evt.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+          const imported = [];
+          rows.forEach((row, idx) => {
+            if (!row || row.length < 2) return;
+            const mmdd = parseExcelBirthdayDate(row[0]);
+            const name = String(row[1] || '').trim();
+            const shift = row[2] ? String(row[2]).trim().toUpperCase() : '';
+            if (mmdd && name) {
+              imported.push({ mmdd, name, shift });
+            } else if (idx > 0 && row[1]) {
+              const mmddAlt = parseExcelBirthdayDate(row[1]);
+              const nameAlt = String(row[0] || '').trim();
+              if (mmddAlt && nameAlt) imported.push({ mmdd: mmddAlt, name: nameAlt, shift });
+            }
+          });
+          if (!imported.length) {
+            alert('Не знайдено коректних записів. Перевірте формат: 1-ша колонка Дата (ДД.ММ.РРРР), 2-га колонка ПІБ.');
+            return;
+          }
+          state.birthdays = imported;
+          saveState();
+          renderBirthdaysList();
+          renderSchedule();
+        } catch (err) {
+          alert('Помилка читання файлу Excel.');
+        }
+      };
+      reader.readAsArrayBuffer(file);
+      e.target.value = '';
+    }
+
+    function downloadExcelTemplate() {
+      if (!window.XLSX) return;
+      const wsData = [
+        ['Дата народження', 'ПІБ', 'Зміна'],
+        ['15.03.1988', 'Коваленко Олександр Петрович', 'А'],
+        ['24.08.1992', 'Мельник Ірина Василівна', 'Б'],
+        ['12.11.1985', 'Бондаренко Сергій Іванович', 'В']
+      ];
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+      XLSX.utils.book_append_sheet(wb, ws, 'Дні народження');
+      XLSX.writeFile(wb, 'shablon_dni_narodzhennya.xlsx');
+    }
+
+    function clearBirthdays() {
+      state.birthdays = [];
+      saveState();
+      renderBirthdaysList();
+      renderSchedule();
+    }
+
+    // --- Backup JSON ---
+    function exportBackup() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `grafik_zmin_backup_${toISODate(today)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importBackup(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const parsed = JSON.parse(evt.target.result);
+          state = { ...state, ...parsed };
+          saveState();
+          applyTheme();
+          renderSchedule(selectedDateStr);
+          closeModal('menuModal');
+        } catch (err) {
+          alert('Некоректний файл резервної копії.');
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Init
+    loadState();
+    renderSchedule(selectedDateStr);
+  </script>
+</body>
+</html>
