@@ -1047,7 +1047,7 @@
         </button>
         <input id="backupInput" type="file" accept=".json" style="display:none" onchange="importBackup(event)" />
         <div class="version-footer" style="display:flex;align-items:center;justify-content:center;gap:8px;padding-top:6px;">
-          <span>Версія додатку: <b id="updateCheckStatus">v1.8.4</b></span>
+          <span>Версія додатку: <b id="updateCheckStatus">v1.8.5</b></span>
           <button type="button" title="Оновити сторінку / перевірити оновлення" onclick="haptic('light'); forceRefreshApp()" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--surface-2);color:var(--text);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;line-height:1;">↻</button>
         </div>
       </div>
@@ -1310,7 +1310,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'v1.8.4';
+    const APP_VERSION = 'v1.8.5';
     const SHIFTS = ['А', 'Б', 'В', 'Г', 'Д'];
     const EXAM_TYPES = ['ОП', 'ПБ', 'ПТЕ', 'НПАОП', 'РБ', 'ПНЯРБ'];
     const DOW_UA = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
@@ -1325,7 +1325,7 @@
       ['2', '2', '-', '-', '1']  // Д
     ];
 
-    const APP_BUILD = 184;
+    const APP_BUILD = 185;
     const DEFAULT_CUSTOM_WEEK = ['-', 'Р', 'Р', 'Р', 'Р', 'Р', '-'];
     const STORAGE_KEY = 'shift_schedule_pwa_v6';
 
@@ -1917,6 +1917,7 @@
 
     let pressTimer = null;
     let pressTriggered = false;
+    let pendingDoubleTap = false;
     let pressStartX = 0;
     let pressStartY = 0;
     let pressingEl = null;
@@ -1968,33 +1969,35 @@
         const tapKey = isDateCell ? (iso + '_d') : (iso + '_s_' + sIdx);
         const now = Date.now();
 
-        // Check double tap immediately on 2nd pointerdown so long-press timer never interferes
-        if (
-          tapKey === lastTapKey &&
-          (now - lastTapTime) < 460 &&
-          Math.abs(e.clientX - lastTapX) < 28 &&
-          Math.abs(e.clientY - lastTapY) < 28
-        ) {
-          clearPressState();
-          lastTapTime = 0;
-          lastTapKey = '';
-          triggerCellAction(iso, isDateCell, sIdx);
-          return;
-        }
-
-        lastTapTime = now;
-        lastTapKey = tapKey;
-        lastTapX = e.clientX;
-        lastTapY = e.clientY;
-
+        clearPressState();
         pressTriggered = false;
         pressStartX = e.clientX;
         pressStartY = e.clientY;
         pressingEl = targetCell;
         targetCell.classList.add('pressing');
 
+        // Mark 2nd tap on pointerdown (suppressing long-press), and open modal cleanly on pointerup
+        if (
+          tapKey === lastTapKey &&
+          (now - lastTapTime) < 460 &&
+          Math.abs(e.clientX - lastTapX) < 28 &&
+          Math.abs(e.clientY - lastTapY) < 28
+        ) {
+          pendingDoubleTap = true;
+          lastTapTime = 0;
+          lastTapKey = '';
+          return;
+        }
+
+        pendingDoubleTap = false;
+        lastTapTime = now;
+        lastTapKey = tapKey;
+        lastTapX = e.clientX;
+        lastTapY = e.clientY;
+
         pressTimer = setTimeout(() => {
           pressTriggered = true;
+          pendingDoubleTap = false;
           clearPressState();
           lastTapTime = 0;
           lastTapKey = '';
@@ -2003,9 +2006,10 @@
       });
 
       container.addEventListener('pointermove', (e) => {
-        if (!pressTimer) return;
+        if (!pressingEl && !pressTimer) return;
         if (Math.abs(e.clientX - pressStartX) > 14 || Math.abs(e.clientY - pressStartY) > 14) {
           clearPressState();
+          pendingDoubleTap = false;
           lastTapTime = 0;
           lastTapKey = '';
         }
@@ -2013,16 +2017,32 @@
 
       container.addEventListener('pointerup', (e) => {
         const wasTimerActive = Boolean(pressTimer);
+        const isDbl = pendingDoubleTap;
+        pendingDoubleTap = false;
         clearPressState();
+
+        const dateCell = e.target.closest('.date-cell');
+        const shiftCell = e.target.closest('.shift-cell');
+        const row = e.target.closest('.day-row');
+        if (!row || !row.dataset.date) return;
+
+        if (isDbl) {
+          e.preventDefault();
+          triggerCellAction(
+            row.dataset.date,
+            Boolean(dateCell),
+            shiftCell ? Number(shiftCell.dataset.sidx) : null
+          );
+          return;
+        }
+
         if (wasTimerActive && !pressTriggered) {
-          const row = e.target.closest('.day-row');
-          if (row && row.dataset.date) {
-            selectRowDay(row.dataset.date);
-          }
+          selectRowDay(row.dataset.date);
         }
       });
 
       container.addEventListener('pointercancel', () => {
+        pendingDoubleTap = false;
         clearPressState();
       });
 
@@ -2033,6 +2053,7 @@
         if (!row || !row.dataset.date) return;
         if (!dateCell && !shiftCell) return;
         e.preventDefault();
+        pendingDoubleTap = false;
         clearPressState();
         triggerCellAction(
           row.dataset.date,
@@ -2159,7 +2180,10 @@
     }
 
     // --- Modals Utility ---
+    let modalOpenedAt = 0;
+
     function openModal(id) {
+      modalOpenedAt = Date.now();
       document.getElementById(id).classList.add('open');
     }
 
@@ -2168,6 +2192,7 @@
     }
 
     function backdropClose(e, id) {
+      if (Date.now() - modalOpenedAt < 380) return;
       if (e.target.id === id) closeModal(id);
     }
 
