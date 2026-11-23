@@ -46,7 +46,7 @@
 
       --top-bar-h: 54px;
       --thead-h: 42px;
-      --bottom-bar-h: 58px;
+      --bottom-bar-h: 56px;
     }
 
     body.dark {
@@ -89,8 +89,9 @@
 
     html, body {
       height: 100%;
+      width: 100%;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial, sans-serif;
-      background: var(--bg);
+      background: var(--header-bg);
       color: var(--text);
       overflow: hidden;
     }
@@ -200,7 +201,7 @@
       color: var(--thead-text);
       border-bottom: 1px solid var(--border);
       display: grid;
-      grid-template-columns: 74px repeat(5, 1fr);
+      grid-template-columns: 76px repeat(5, 1fr);
       align-items: center;
       z-index: 35;
       font-weight: 700;
@@ -269,7 +270,7 @@
 
     .day-row {
       display: grid;
-      grid-template-columns: 74px repeat(5, 1fr);
+      grid-template-columns: 76px repeat(5, 1fr);
       min-height: 54px;
       border-bottom: 1px solid var(--border);
       background: var(--surface);
@@ -343,10 +344,24 @@
 
     .date-badges {
       display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
       gap: 2px;
       margin-top: 2px;
       font-size: 11px;
       line-height: 1;
+      max-width: 100%;
+    }
+
+    .date-exam-tag {
+      background: #d97706;
+      color: #fff;
+      font-size: 8.5px;
+      font-weight: 800;
+      padding: 1px 4px;
+      border-radius: 4px;
+      line-height: 1.15;
     }
 
     .shift-cell {
@@ -416,26 +431,6 @@
       line-height: 1.1;
     }
 
-    .tag-exam-due {
-      background: #d97706;
-      color: #fff;
-      font-size: 8.5px;
-      font-weight: 700;
-      padding: 1px 3px;
-      border-radius: 4px;
-      line-height: 1.1;
-    }
-
-    .tag-exam-passed {
-      background: #059669;
-      color: #fff;
-      font-size: 8.5px;
-      font-weight: 700;
-      padding: 1px 3px;
-      border-radius: 4px;
-      line-height: 1.1;
-    }
-
     .tag-note {
       width: 6px;
       height: 6px;
@@ -446,7 +441,7 @@
       right: 4px;
     }
 
-    /* Bottom 1-Row Navigation Bar (NO blue strip or outline) */
+    /* Bottom 1-Row Navigation Bar (Completely flush, zero blue strip) */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -702,74 +697,34 @@
       border-color: #dc2626;
     }
 
-    .chip.active-due {
+    .chip.active-exam {
       background: #d97706;
       color: #fff;
       border-color: #d97706;
     }
 
-    .chip.active-passed {
-      background: #059669;
-      color: #fff;
-      border-color: #059669;
-    }
-
-    .exam-subpanel {
-      margin-top: 8px;
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: var(--surface-2);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .exam-subpanel-title {
-      font-size: 12.5px;
-      font-weight: 700;
-      color: var(--text);
+    .exam-date-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-    }
-
-    .exam-mode-btns {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .mini-chip {
-      flex: 1;
-      min-width: 84px;
-      padding: 7px 8px;
-      border-radius: 8px;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 9px;
       border: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+
+    .exam-date-row span {
+      font-weight: 800;
+      font-size: 13.5px;
+      min-width: 60px;
+    }
+
+    .exam-date-row input[type="date"] {
+      flex: 1;
+      padding: 6px 8px;
+      font-size: 13px;
       background: var(--surface);
-      color: var(--text);
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: center;
-    }
-
-    .mini-chip.sel-due {
-      background: #d97706;
-      color: #fff;
-      border-color: #d97706;
-    }
-
-    .mini-chip.sel-passed {
-      background: #059669;
-      color: #fff;
-      border-color: #059669;
-    }
-
-    .mini-chip.sel-remove {
-      background: rgba(220, 38, 38, 0.12);
-      color: #dc2626;
-      border-color: rgba(220, 38, 38, 0.35);
     }
 
     .shift-seq-card {
@@ -843,20 +798,6 @@
     body.dark .holiday-banner {
       color: #fca5a5;
     }
-
-    .warn-banner {
-      padding: 9px 11px;
-      border-radius: 9px;
-      background: rgba(217, 119, 6, 0.14);
-      border: 1px solid rgba(217, 119, 6, 0.4);
-      color: #b45309;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    body.dark .warn-banner {
-      color: #fcd34d;
-    }
   </style>
 </head>
 <body>
@@ -868,7 +809,7 @@
       <div class="app-title">Графік змін</div>
     </div>
     <div class="header-actions">
-      <button id="examAlertBtn" class="hdr-btn icon-only" style="display:none;" title="Нагадування про екзамени" onclick="openExamAlertsModal()">
+      <button id="examAlertBtn" class="hdr-btn icon-only" style="display:none;" title="Найближчі екзамени" onclick="openExamAlertsModal()">
         🔔<span id="examAlertCount" class="alert-badge">0</span>
       </button>
       <button id="headerInstallBtn" class="hdr-btn" style="display:none;" onclick="triggerInstall()">📲</button>
@@ -877,7 +818,7 @@
     </div>
   </header>
 
-  <!-- Fixed 6-column Table Header (Tap А..Д to add shift note / personnel) -->
+  <!-- Fixed 6-column Table Header -->
   <div class="grid-header" role="row">
     <div>Дата</div>
     <div id="colHdr_0" class="shift-col-hdr" onclick="openShiftNoteModal(0)"><span>А</span></div>
@@ -890,7 +831,7 @@
   <!-- Scrollable Schedule Table -->
   <main id="scheduleScroll" class="schedule-scroll"></main>
 
-  <!-- Bottom 1-Row Navigation Bar (Clean, borderless bottom edge) -->
+  <!-- Bottom 1-Row Navigation Bar -->
   <nav class="bottom-nav" aria-label="Навігація по датах">
     <button class="nav-btn" title="Попередній місяць" onclick="shiftMonth(-1)">&lt;&lt;</button>
     <button class="nav-btn" title="Попередній день" onclick="shiftDay(-1)">&lt;</button>
@@ -908,11 +849,11 @@
       </div>
       <div class="modal-body">
         <button id="menuInstallBtn" class="menu-item install-highlight" onclick="triggerInstall()">
-          <span>📲 Додати на головний екран (PWA)</span>
+          <span>📲 Додати на головний екран</span>
           <span>›</span>
         </button>
-        <button class="menu-item" onclick="closeModal('menuModal'); openExamAlertsModal();">
-          <span>🔔 Найближчі екзамени (попередження за 14 дн.)</span>
+        <button id="menuExamAlertsBtn" class="menu-item" style="display:none;" onclick="closeModal('menuModal'); openExamAlertsModal();">
+          <span>🔔 Найближчі екзамени</span>
           <span id="menuExamCount">0</span>
         </button>
         <button class="menu-item" onclick="closeModal('menuModal'); openPatternModal();">
@@ -920,7 +861,7 @@
           <span>›</span>
         </button>
         <button class="menu-item" onclick="closeModal('menuModal'); openBirthdaysModal();">
-          <span>🎂 Дні народження (Excel та вручну)</span>
+          <span>🎂 Дні народження</span>
           <span>›</span>
         </button>
         <button class="menu-item" onclick="exportBackup()">
@@ -932,12 +873,12 @@
           <span>›</span>
         </button>
         <input id="backupInput" type="file" accept=".json" style="display:none" onchange="importBackup(event)" />
-        <div class="version-footer">Версія додатку: <b>v1.4.1</b></div>
+        <div class="version-footer">Версія додатку: <b>v1.5.0</b></div>
       </div>
     </div>
   </div>
 
-  <!-- Shift Column Note Modal (Click А, Б, В, Г, Д header) -->
+  <!-- Shift Column Note Modal -->
   <div id="shiftNoteModal" class="modal-backdrop" onclick="backdropClose(event, 'shiftNoteModal')">
     <div class="modal-card">
       <div class="modal-header">
@@ -945,12 +886,9 @@
         <button class="modal-close" onclick="closeModal('shiftNoteModal')">&times;</button>
       </div>
       <div class="modal-body">
-        <div class="hint-box">
-          Запишіть склад зміни, відповідальних працівників або важливу інформацію для цієї зміни.
-        </div>
         <div class="field-group">
           <div class="field-label">Склад зміни / примітка</div>
-          <textarea id="shiftNoteTextarea" rows="5" placeholder="Наприклад:&#10;НЗ: Іваненко І.І.&#10;Оператор: Петренко П.П."></textarea>
+          <textarea id="shiftNoteTextarea" rows="5"></textarea>
         </div>
       </div>
       <div class="modal-footer">
@@ -960,17 +898,14 @@
     </div>
   </div>
 
-  <!-- Upcoming Exam Alerts Modal (14 days warning) -->
+  <!-- Upcoming Exam Alerts Modal -->
   <div id="examAlertsModal" class="modal-backdrop" onclick="backdropClose(event, 'examAlertsModal')">
     <div class="modal-card">
       <div class="modal-header">
-        <span>🔔 Попередження про екзамени</span>
+        <span>🔔 Найближчі екзамени</span>
         <button class="modal-close" onclick="closeModal('examAlertsModal')">&times;</button>
       </div>
       <div class="modal-body">
-        <div class="hint-box">
-          Відображаються заплановані екзамени, до здачі яких залишилось <b>14 днів або менше</b> (включно з простроченими за останні 7 днів).
-        </div>
         <div id="examAlertsList" style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
       <div class="modal-footer">
@@ -1006,7 +941,7 @@
     </div>
   </div>
 
-  <!-- Cell Edit Modal (Override, Д, Exams with Due / Passed +1y / +2y) -->
+  <!-- Cell Edit Modal (Override, Д, Note) -->
   <div id="cellModal" class="modal-backdrop" onclick="backdropClose(event, 'cellModal')">
     <div class="modal-card">
       <div class="modal-header">
@@ -1033,12 +968,6 @@
         </div>
 
         <div class="field-group">
-          <div class="field-label">Екзамени (натисніть на екзамен для вибору статусу)</div>
-          <div id="examChipsGrid" class="chip-grid"></div>
-          <div id="examActionPanel" class="exam-subpanel" style="display:none;"></div>
-        </div>
-
-        <div class="field-group">
           <div class="field-label">Примітка до клітинки</div>
           <input id="cellNoteInput" type="text" placeholder="Наприклад: підміна, інструктаж..." />
         </div>
@@ -1050,11 +979,11 @@
     </div>
   </div>
 
-  <!-- Day Events, Holidays & Birthdays Modal -->
+  <!-- Day Modal (Exams with Editable Date + Holidays + Birthdays + Events) -->
   <div id="dayModal" class="modal-backdrop" onclick="backdropClose(event, 'dayModal')">
     <div class="modal-card">
       <div class="modal-header">
-        <span id="dayModalTitle">Події на 01.01.2026</span>
+        <span id="dayModalTitle">Дата: 01.01.2026</span>
         <button class="modal-close" onclick="closeModal('dayModal')">&times;</button>
       </div>
       <div class="modal-body">
@@ -1063,6 +992,12 @@
         <div id="dayBirthdaysBox" style="display:none;">
           <div class="field-label" style="margin-bottom:4px;">🎂 Дні народження цього дня:</div>
           <div id="dayBirthdaysList" style="display:flex;flex-direction:column;gap:4px;"></div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Екзамени (оберіть та за потреби змініть дату)</div>
+          <div id="dayExamChipsGrid" class="chip-grid"></div>
+          <div id="daySelectedExamsDates" style="display:flex;flex-direction:column;gap:6px;margin-top:4px;"></div>
         </div>
 
         <div class="field-group">
@@ -1079,7 +1014,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn" onclick="closeModal('dayModal')">Закрити</button>
+        <button class="btn btn-primary" onclick="closeModal('dayModal')">Готово</button>
       </div>
     </div>
   </div>
@@ -1110,7 +1045,7 @@
     </div>
   </div>
 
-  <!-- Birthdays Excel + Manual Add Modal -->
+  <!-- Birthdays Modal -->
   <div id="birthdaysModal" class="modal-backdrop" onclick="backdropClose(event, 'birthdaysModal')">
     <div class="modal-card">
       <div class="modal-header">
@@ -1157,7 +1092,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'v1.4.1';
+    const APP_VERSION = 'v1.5.0';
     const SHIFTS = ['А', 'Б', 'В', 'Г', 'Д'];
     const EXAM_TYPES = ['ОП', 'ПБ', 'ПТЕ', 'НПАОП', 'РБ', 'ПНЯРБ'];
     const DOW_UA = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
@@ -1172,14 +1107,15 @@
       ['2', '2', '-', '-', '1']  // Д
     ];
 
-    const STORAGE_KEY = 'shift_schedule_pwa_v4';
+    const STORAGE_KEY = 'shift_schedule_pwa_v5';
 
     let state = {
       theme: 'light',
       anchorDate: '2026-01-01',
       fiveDays: DEFAULT_FIVE_DAYS.map((arr) => [...arr]),
       shiftNotes: ['', '', '', '', ''],
-      cells: {},      // "YYYY-MM-DD_0": { override, extraD, exams: [{ name, status: 'due'|'passed', validYears: 1|2, nextDate }], note }
+      cells: {},      // "YYYY-MM-DD_0": { override, extraD, note }
+      dayExams: {},   // "YYYY-MM-DD": ["ОП", "ПБ"]
       events: {},     // "YYYY-MM-DD": [ "Текст події" ]
       birthdays: []   // [ { mmdd: "05-14", name: "...", position: "...", shift: "А" } ]
     };
@@ -1193,21 +1129,19 @@
 
     let editingShiftIdx = 0;
     let editingCellKey = null;
-    let activeExamName = null;
-    let tempCellData = { override: null, extraD: false, exams: [], note: '' };
+    let tempCellData = { override: null, extraD: false, note: '' };
     let editingDayStr = null;
     let deferredInstallPrompt = null;
 
-    // --- Ukrainian State Holidays (Fixed + Orthodox Easter / Trinity) ---
+    // --- Ukrainian State Holidays ---
     function getOrthodoxEaster(year) {
       const a = year % 4;
       const b = year % 7;
       const c = year % 19;
       const d = (19 * c + 15) % 30;
       const e = (2 * a + 4 * b - d + 34) % 7;
-      const month = Math.floor((d + e + 114) / 31); // 3=March, 4=April (Julian)
+      const month = Math.floor((d + e + 114) / 31);
       const day = ((d + e + 114) % 31) + 1;
-      // Julian to Gregorian offset (+13 days for 1900..2099)
       const julianDate = new Date(year, month - 1, day);
       julianDate.setDate(julianDate.getDate() + 13);
       return julianDate;
@@ -1246,6 +1180,27 @@
     }
 
     // --- Service Worker & PWA Install Handling ---
+    function isAppInstalled() {
+      return (
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.matchMedia('(display-mode: fullscreen)').matches ||
+        window.navigator.standalone === true
+      );
+    }
+
+    function updateInstallButtonsVisibility() {
+      const installed = isAppInstalled();
+      const menuBtn = document.getElementById('menuInstallBtn');
+      const hdrBtn = document.getElementById('headerInstallBtn');
+      if (installed) {
+        if (menuBtn) menuBtn.style.display = 'none';
+        if (hdrBtn) hdrBtn.style.display = 'none';
+      } else {
+        if (menuBtn) menuBtn.style.display = 'flex';
+        if (hdrBtn) hdrBtn.style.display = deferredInstallPrompt ? 'inline-flex' : 'none';
+      }
+    }
+
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch(() => {});
@@ -1255,33 +1210,34 @@
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredInstallPrompt = e;
-      document.getElementById('headerInstallBtn').style.display = 'inline-flex';
+      updateInstallButtonsVisibility();
     });
 
     window.addEventListener('appinstalled', () => {
       deferredInstallPrompt = null;
-      document.getElementById('headerInstallBtn').style.display = 'none';
+      updateInstallButtonsVisibility();
     });
 
     async function triggerInstall() {
+      if (isAppInstalled()) {
+        updateInstallButtonsVisibility();
+        return;
+      }
       if (deferredInstallPrompt) {
         deferredInstallPrompt.prompt();
         const choice = await deferredInstallPrompt.userChoice;
         if (choice.outcome === 'accepted') {
           deferredInstallPrompt = null;
-          document.getElementById('headerInstallBtn').style.display = 'none';
+          updateInstallButtonsVisibility();
         }
         closeModal('menuModal');
         return;
       }
 
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
       const isHttps = location.protocol === 'https:' || location.hostname === 'localhost';
       const statusEl = document.getElementById('installStatusText');
 
-      if (isStandalone) {
-        statusEl.innerHTML = '✅ Додаток вже встановлено та запущено у повноекранному режимі.';
-      } else if (!isHttps) {
+      if (!isHttps) {
         statusEl.innerHTML = '⚠️ Зараз файл відкрито локально (<code>' + location.protocol + '</code>). Для появи системної кнопки встановлення завантажте файли на <b>GitHub Pages</b> або <b>Vercel</b> (по протоколу <b>https://</b>).';
       } else {
         statusEl.innerHTML = 'ℹ️ Браузер дозволяє встановити додаток вручну через меню браузера (інструкція нижче).';
@@ -1294,7 +1250,10 @@
     // --- Storage & Migration ---
     function loadState() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('shift_schedule_pwa_v3');
+        const raw =
+          localStorage.getItem(STORAGE_KEY) ||
+          localStorage.getItem('shift_schedule_pwa_v4') ||
+          localStorage.getItem('shift_schedule_pwa_v3');
         if (raw) {
           const parsed = JSON.parse(raw);
           state = { ...state, ...parsed };
@@ -1304,18 +1263,28 @@
           if (!Array.isArray(state.shiftNotes) || state.shiftNotes.length !== 5) {
             state.shiftNotes = ['', '', '', '', ''];
           }
-          // Migrate legacy string exams array to structured objects
+          if (!state.dayExams || typeof state.dayExams !== 'object') {
+            state.dayExams = {};
+          }
+          // Migrate legacy cell-level exams to date-level dayExams
           Object.keys(state.cells || {}).forEach((k) => {
             const c = state.cells[k];
-            if (c && Array.isArray(c.exams)) {
-              c.exams = c.exams.map((ex) =>
-                typeof ex === 'string' ? { name: ex, status: 'due', validYears: null, nextDate: null } : ex
-              );
+            if (c && Array.isArray(c.exams) && c.exams.length) {
+              const iso = k.split('_')[0];
+              if (!state.dayExams[iso]) state.dayExams[iso] = [];
+              c.exams.forEach((ex) => {
+                const name = typeof ex === 'string' ? ex : ex.name;
+                if (name && !state.dayExams[iso].includes(name)) {
+                  state.dayExams[iso].push(name);
+                }
+              });
+              delete c.exams;
             }
           });
         }
       } catch (e) {}
       applyTheme();
+      updateInstallButtonsVisibility();
     }
 
     function saveState() {
@@ -1356,16 +1325,6 @@
     function formatDisplayDate(str) {
       const [y, m, d] = str.split('-');
       return `${d}.${m}.${y}`;
-    }
-
-    function addYearsISO(isoStr, years) {
-      const d = parseISODate(isoStr);
-      const origMonth = d.getMonth();
-      d.setFullYear(d.getFullYear() + years);
-      if (d.getMonth() !== origMonth) {
-        d.setDate(0); // Handle Feb 29 -> Feb 28
-      }
-      return toISODate(d);
     }
 
     function diffDays(d1, d2) {
@@ -1412,26 +1371,22 @@
       return fullCycle[idx] || '-';
     }
 
-    // --- Exam 14-Day Alerts Scanner ---
+    // --- Upcoming Exam Alerts (within 14 days; completely hidden if none) ---
     function getUpcomingExamAlerts() {
       const alerts = [];
-      Object.entries(state.cells || {}).forEach(([cellKey, cellMeta]) => {
-        if (!cellMeta || !Array.isArray(cellMeta.exams)) return;
-        const [iso, sIdxStr] = cellKey.split('_');
-        const sIdx = Number(sIdxStr);
+      Object.entries(state.dayExams || {}).forEach(([iso, examsArr]) => {
+        if (!Array.isArray(examsArr) || !examsArr.length) return;
         const examDate = parseISODate(iso);
         const daysLeft = diffDays(today, examDate);
-
-        cellMeta.exams.forEach((ex) => {
-          if (ex.status === 'due' && daysLeft <= 14 && daysLeft >= -7) {
+        if (daysLeft >= 0 && daysLeft <= 14) {
+          examsArr.forEach((examName) => {
             alerts.push({
               iso,
-              shiftIdx: sIdx,
-              examName: ex.name,
+              examName,
               daysLeft
             });
-          }
-        });
+          });
+        }
       });
       alerts.sort((a, b) => a.daysLeft - b.daysLeft);
       return alerts;
@@ -1439,40 +1394,35 @@
 
     function updateExamAlertsBadge() {
       const alerts = getUpcomingExamAlerts();
-      const btn = document.getElementById('examAlertBtn');
+      const hdrBtn = document.getElementById('examAlertBtn');
       const badge = document.getElementById('examAlertCount');
+      const menuBtn = document.getElementById('menuExamAlertsBtn');
       const menuCnt = document.getElementById('menuExamCount');
 
-      if (menuCnt) menuCnt.textContent = alerts.length;
       if (alerts.length > 0) {
-        btn.style.display = 'inline-flex';
-        badge.textContent = alerts.length;
+        if (hdrBtn) hdrBtn.style.display = 'inline-flex';
+        if (badge) badge.textContent = alerts.length;
+        if (menuBtn) menuBtn.style.display = 'flex';
+        if (menuCnt) menuCnt.textContent = alerts.length;
       } else {
-        btn.style.display = 'none';
+        if (hdrBtn) hdrBtn.style.display = 'none';
+        if (menuBtn) menuBtn.style.display = 'none';
       }
     }
 
     function openExamAlertsModal() {
       const alerts = getUpcomingExamAlerts();
+      if (!alerts.length) return;
       const listEl = document.getElementById('examAlertsList');
-      if (!alerts.length) {
-        listEl.innerHTML = `<div style="font-size:13px;color:var(--text-muted);">На найближчі 14 днів запланованих екзаменів немає.</div>`;
-      } else {
-        listEl.innerHTML = alerts
-          .map((a) => {
-            const whenText =
-              a.daysLeft < 0
-                ? `Прострочено на ${Math.abs(a.daysLeft)} дн.`
-                : a.daysLeft === 0
-                ? 'Сьогодні!'
-                : `Через ${a.daysLeft} дн.`;
-            return `<div class="list-item" style="cursor:pointer;" onclick="closeModal('examAlertsModal'); jumpToDate('${a.iso}');">
-              <span>🔔 <b>${escapeHtml(a.examName)}</b> — Зміна ${SHIFTS[a.shiftIdx]} (${formatDisplayDate(a.iso)})</span>
-              <span style="color:#d97706;font-weight:700;">${whenText}</span>
-            </div>`;
-          })
-          .join('');
-      }
+      listEl.innerHTML = alerts
+        .map((a) => {
+          const whenText = a.daysLeft === 0 ? 'Сьогодні!' : `Через ${a.daysLeft} дн.`;
+          return `<div class="list-item" style="cursor:pointer;" onclick="closeModal('examAlertsModal'); jumpToDate('${a.iso}');">
+            <span>🔔 <b>${escapeHtml(a.examName)}</b> — ${formatDisplayDate(a.iso)}</span>
+            <span style="color:#d97706;font-weight:700;">${whenText}</span>
+          </div>`;
+        })
+        .join('');
       openModal('examAlertsModal');
     }
 
@@ -1490,7 +1440,8 @@
         const el = document.getElementById(`colHdr_${i}`);
         const note = (state.shiftNotes[i] || '').trim();
         if (note) {
-          const firstLine = note.split('\n')[0];
+          const firstLine = note.split('
+')[0];
           el.innerHTML = `<span>${SHIFTS[i]}</span><span class="shift-col-sub">${escapeHtml(firstLine)}</span><span class="shift-col-dot"></span>`;
         } else {
           el.innerHTML = `<span>${SHIFTS[i]}</span>`;
@@ -1544,6 +1495,7 @@
 
         const dayEvents = state.events[iso] || [];
         const dayBdays = state.birthdays.filter((b) => b.mmdd === mmdd);
+        const examsOnDate = state.dayExams[iso] || [];
 
         const rowClasses = ['day-row'];
         if (isWeekend) rowClasses.push('weekend');
@@ -1555,11 +1507,14 @@
         html += `<div class="date-cell" onclick="openDayModal('${iso}')">`;
         html += `<span class="date-num">${pad2(day)}.${pad2(viewMonth + 1)}</span>`;
         html += `<span class="date-dow">${DOW_UA[dow]}</span>`;
-        if (holidayName || dayEvents.length || dayBdays.length) {
+        if (holidayName || dayEvents.length || dayBdays.length || examsOnDate.length) {
           html += `<div class="date-badges">`;
           if (holidayName) html += `<span title="${escapeHtml(holidayName)}">🇺🇦</span>`;
           if (dayEvents.length) html += `<span>📌</span>`;
           if (dayBdays.length) html += `<span>🎂</span>`;
+          examsOnDate.forEach((ex) => {
+            html += `<span class="date-exam-tag">${escapeHtml(ex)}</span>`;
+          });
           html += `</div>`;
         }
         html += `</div>`;
@@ -1575,19 +1530,8 @@
             html += `<span class="tag-note"></span>`;
           }
           html += `<div class="shift-pill ${pillClass}">${val}</div>`;
-          if (cellMeta && (cellMeta.extraD || (cellMeta.exams && cellMeta.exams.length))) {
-            html += `<div class="cell-tags">`;
-            if (cellMeta.extraD) html += `<span class="tag-d">Д</span>`;
-            if (cellMeta.exams && cellMeta.exams.length) {
-              cellMeta.exams.forEach((ex) => {
-                if (ex.status === 'passed') {
-                  html += `<span class="tag-exam-passed">✓${ex.name}</span>`;
-                } else {
-                  html += `<span class="tag-exam-due">${ex.name}</span>`;
-                }
-              });
-            }
-            html += `</div>`;
+          if (cellMeta && cellMeta.extraD) {
+            html += `<div class="cell-tags"><span class="tag-d">Д</span></div>`;
           }
           html += `</div>`;
         }
@@ -1652,19 +1596,17 @@
       if (e.target.id === id) closeModal(id);
     }
 
-    // --- Cell Editor (with Exam Due / Passed +1y / +2y) ---
+    // --- Cell Editor (Shift Override, Д, Note) ---
     function openCellModal(iso, sIdx) {
       selectedDateStr = iso;
       editingCellKey = `${iso}_${sIdx}`;
-      const existing = state.cells[editingCellKey] || { override: null, extraD: false, exams: [], note: '' };
+      const existing = state.cells[editingCellKey] || { override: null, extraD: false, note: '' };
       tempCellData = {
         override: existing.override || null,
         extraD: Boolean(existing.extraD),
-        exams: (existing.exams || []).map((ex) => ({ ...ex })),
         note: existing.note || ''
       };
 
-      activeExamName = null;
       document.getElementById('cellModalTitle').textContent = `Зміна ${SHIFTS[sIdx]} — ${formatDisplayDate(iso)}`;
       document.getElementById('cellNoteInput').value = tempCellData.note;
       syncCellModalUI();
@@ -1677,77 +1619,6 @@
         el.classList.toggle('active', el.dataset.val === ovVal);
       });
       document.getElementById('chipExtraD').classList.toggle('active-d', tempCellData.extraD);
-
-      const gridEl = document.getElementById('examChipsGrid');
-      gridEl.innerHTML = EXAM_TYPES.map((name) => {
-        const found = tempCellData.exams.find((e) => e.name === name);
-        let cls = 'chip';
-        let label = name;
-        if (found) {
-          if (found.status === 'passed') {
-            cls += ' active-passed';
-            label = `✓ ${name} (${found.validYears} р.)`;
-          } else {
-            cls += ' active-due';
-            label = `${name} (здавати)`;
-          }
-        }
-        const outlineStyle = activeExamName === name ? 'outline:2px solid #2563eb;outline-offset:1px;' : '';
-        return `<div class="${cls}" style="${outlineStyle}" onclick="openExamPicker('${name}')">${label}</div>`;
-      }).join('');
-
-      const panelEl = document.getElementById('examActionPanel');
-      if (!activeExamName) {
-        panelEl.style.display = 'none';
-        panelEl.innerHTML = '';
-      } else {
-        const found = tempCellData.exams.find((e) => e.name === activeExamName);
-        const isDue = found && found.status === 'due';
-        const isP1 = found && found.status === 'passed' && found.validYears === 1;
-        const isP2 = found && found.status === 'passed' && found.validYears === 2;
-
-        panelEl.style.display = 'flex';
-        panelEl.innerHTML = `
-          <div class="exam-subpanel-title">
-            <span>Екзамен <b>${activeExamName}</b> — оберіть дію:</span>
-            <span style="cursor:pointer;color:var(--text-muted);font-size:16px;" onclick="closeExamPicker()">✕</span>
-          </div>
-          <div class="exam-mode-btns">
-            <button type="button" class="mini-chip ${isDue ? 'sel-due' : ''}" onclick="setExamMode('${activeExamName}', 'due', null)">Здавати</button>
-            <button type="button" class="mini-chip ${isP1 ? 'sel-passed' : ''}" onclick="setExamMode('${activeExamName}', 'passed', 1)">Здав (на 1 рік)</button>
-            <button type="button" class="mini-chip ${isP2 ? 'sel-passed' : ''}" onclick="setExamMode('${activeExamName}', 'passed', 2)">Здав (на 2 роки)</button>
-            ${found ? `<button type="button" class="mini-chip sel-remove" onclick="removeExamSelection('${activeExamName}')">Прибрати</button>` : ''}
-          </div>
-        `;
-      }
-    }
-
-    function openExamPicker(name) {
-      activeExamName = activeExamName === name ? null : name;
-      syncCellModalUI();
-    }
-
-    function closeExamPicker() {
-      activeExamName = null;
-      syncCellModalUI();
-    }
-
-    function removeExamSelection(name) {
-      tempCellData.exams = tempCellData.exams.filter((e) => e.name !== name);
-      activeExamName = null;
-      syncCellModalUI();
-    }
-
-    function setExamMode(name, status, validYears) {
-      const idx = tempCellData.exams.findIndex((e) => e.name === name);
-      if (idx >= 0) {
-        const cur = tempCellData.exams[idx];
-        tempCellData.exams[idx] = { name, status, validYears, nextDate: cur.nextDate || null };
-      } else {
-        tempCellData.exams.push({ name, status, validYears, nextDate: null });
-      }
-      activeExamName = null;
-      syncCellModalUI();
     }
 
     function selectOverride(val) {
@@ -1761,80 +1632,26 @@
     }
 
     function saveCellData() {
-      const [iso, sIdxStr] = editingCellKey.split('_');
-      const prevCell = state.cells[editingCellKey];
-
-      // Remove previously auto-scheduled future exam reminders if changed/cleared
-      if (prevCell && Array.isArray(prevCell.exams)) {
-        prevCell.exams.forEach((oldEx) => {
-          if (oldEx.status === 'passed' && oldEx.nextDate) {
-            removeAutoScheduledExam(oldEx.nextDate, sIdxStr, oldEx.name);
-          }
-        });
-      }
-
-      // Schedule new future exam reminders (+1 year or +2 years)
-      tempCellData.exams.forEach((ex) => {
-        if (ex.status === 'passed' && (ex.validYears === 1 || ex.validYears === 2)) {
-          const nextIso = addYearsISO(iso, ex.validYears);
-          ex.nextDate = nextIso;
-          addAutoScheduledExam(nextIso, sIdxStr, ex.name);
-        } else {
-          ex.nextDate = null;
-        }
-      });
-
       tempCellData.note = document.getElementById('cellNoteInput').value.trim();
-      const isEmpty = !tempCellData.override && !tempCellData.extraD && tempCellData.exams.length === 0 && !tempCellData.note;
+      const isEmpty = !tempCellData.override && !tempCellData.extraD && !tempCellData.note;
       if (isEmpty) {
         delete state.cells[editingCellKey];
       } else {
         state.cells[editingCellKey] = { ...tempCellData };
       }
-
       saveState();
       closeModal('cellModal');
       renderSchedule();
     }
 
-    function addAutoScheduledExam(targetIso, sIdxStr, examName) {
-      const targetKey = `${targetIso}_${sIdxStr}`;
-      if (!state.cells[targetKey]) {
-        state.cells[targetKey] = { override: null, extraD: false, exams: [], note: '' };
-      }
-      const exists = state.cells[targetKey].exams.some((e) => e.name === examName && e.status === 'due');
-      if (!exists) {
-        state.cells[targetKey].exams.push({ name: examName, status: 'due', validYears: null, nextDate: null });
-      }
-    }
-
-    function removeAutoScheduledExam(targetIso, sIdxStr, examName) {
-      const targetKey = `${targetIso}_${sIdxStr}`;
-      const cell = state.cells[targetKey];
-      if (!cell || !Array.isArray(cell.exams)) return;
-      cell.exams = cell.exams.filter((e) => !(e.name === examName && e.status === 'due'));
-      if (!cell.override && !cell.extraD && cell.exams.length === 0 && !cell.note) {
-        delete state.cells[targetKey];
-      }
-    }
-
     function clearCellData() {
-      const [iso, sIdxStr] = editingCellKey.split('_');
-      const prevCell = state.cells[editingCellKey];
-      if (prevCell && Array.isArray(prevCell.exams)) {
-        prevCell.exams.forEach((oldEx) => {
-          if (oldEx.status === 'passed' && oldEx.nextDate) {
-            removeAutoScheduledExam(oldEx.nextDate, sIdxStr, oldEx.name);
-          }
-        });
-      }
       delete state.cells[editingCellKey];
       saveState();
       closeModal('cellModal');
       renderSchedule();
     }
 
-    // --- Day Events, Holidays & Birthdays ---
+    // --- Day Modal (Exams with Editable Date + Holidays + Birthdays + Events) ---
     function openDayModal(iso) {
       selectedDateStr = iso;
       editingDayStr = iso;
@@ -1842,6 +1659,40 @@
       document.getElementById('newEventInput').value = '';
       renderDayModalLists();
       openModal('dayModal');
+    }
+
+    function toggleDayExam(examName) {
+      if (!state.dayExams[editingDayStr]) state.dayExams[editingDayStr] = [];
+      const idx = state.dayExams[editingDayStr].indexOf(examName);
+      if (idx >= 0) {
+        state.dayExams[editingDayStr].splice(idx, 1);
+        if (!state.dayExams[editingDayStr].length) delete state.dayExams[editingDayStr];
+      } else {
+        state.dayExams[editingDayStr].push(examName);
+      }
+      saveState();
+      renderDayModalLists();
+      renderSchedule();
+    }
+
+    function moveDayExamDate(examName, newIso) {
+      if (!newIso || newIso === editingDayStr) return;
+
+      // Remove from current editingDayStr
+      if (state.dayExams[editingDayStr]) {
+        state.dayExams[editingDayStr] = state.dayExams[editingDayStr].filter((e) => e !== examName);
+        if (!state.dayExams[editingDayStr].length) delete state.dayExams[editingDayStr];
+      }
+
+      // Add to newIso
+      if (!state.dayExams[newIso]) state.dayExams[newIso] = [];
+      if (!state.dayExams[newIso].includes(examName)) {
+        state.dayExams[newIso].push(examName);
+      }
+
+      saveState();
+      renderDayModalLists();
+      renderSchedule();
     }
 
     function renderDayModalLists() {
@@ -1870,6 +1721,28 @@
           .join('');
       } else {
         bBox.style.display = 'none';
+      }
+
+      // Exams selector + editable date rows for selected exams
+      const selectedExams = state.dayExams[editingDayStr] || [];
+      const chipsEl = document.getElementById('dayExamChipsGrid');
+      chipsEl.innerHTML = EXAM_TYPES.map((name) => {
+        const isSel = selectedExams.includes(name);
+        return `<div class="chip ${isSel ? 'active-exam' : ''}" onclick="toggleDayExam('${name}')">${name}</div>`;
+      }).join('');
+
+      const datesContainer = document.getElementById('daySelectedExamsDates');
+      if (!selectedExams.length) {
+        datesContainer.innerHTML = '';
+      } else {
+        datesContainer.innerHTML = selectedExams
+          .map(
+            (name) => `<div class="exam-date-row">
+              <span>${escapeHtml(name)}</span>
+              <input type="date" value="${editingDayStr}" onchange="moveDayExamDate('${name}', this.value)" />
+            </div>`
+          )
+          .join('');
       }
 
       const evs = state.events[editingDayStr] || [];
@@ -2175,7 +2048,7 @@
         ['Мельник', 'Микола', 'Миколайович', '01.06.1982', 'оператор СВО']
       ];
       const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet(wsData);
+      const ws = XLSX.utils.ao_to_sheet(wsData);
       XLSX.utils.book_append_sheet(wb, ws, 'Дні народження');
       XLSX.writeFile(wb, 'shablon_dni_narodzhennya.xlsx');
     }
