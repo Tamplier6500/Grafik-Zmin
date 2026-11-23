@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#1976d2" />
+  <meta id="metaThemeColor" name="theme-color" content="#f8fafc" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Графік змін" />
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
@@ -17,10 +17,12 @@
       --bg: #f1f5f9;
       --surface: #ffffff;
       --surface-2: #f8fafc;
-      --header-bg: #1976d2;
-      --header-text: #ffffff;
+      --header-bg: #ffffff;
+      --header-text: #0f172a;
+      --header-btn-bg: #f1f5f9;
+      --header-btn-border: #cbd5e1;
       --thead-bg: #e2e8f0;
-      --thead-text: #0f172a;
+      --thead-text: #1e293b;
       --text: #0f172a;
       --text-muted: #64748b;
       --border: #cbd5e1;
@@ -29,58 +31,55 @@
       --selected-bg: #fef9c3;
       --weekend-bg: #f8fafc;
 
+      /* Soft borderless pills (Light) */
       --s1-bg: #e0f2fe;
       --s1-text: #0369a1;
-      --s1-border: #7dd3fc;
 
       --s2-bg: #ffedd5;
       --s2-text: #c2410c;
-      --s2-border: #fdba74;
 
       --s3-bg: #ede9fe;
       --s3-text: #6d28d9;
-      --s3-border: #c4b5fd;
 
       --soff-bg: #f1f5f9;
-      --soff-text: #64748b;
-      --soff-border: #cbd5e1;
+      --soff-text: #94a3b8;
 
-      --top-bar-h: 52px;
-      --thead-h: 42px;
+      --top-bar-h: 54px;
+      --thead-h: 40px;
       --bottom-bar-h: 58px;
     }
 
+    /* Softer Dark Theme (Slate/Charcoal tones instead of harsh pitch black) */
     body.dark {
-      --bg: #0b1120;
-      --surface: #111827;
-      --surface-2: #1e293b;
-      --header-bg: #1e3a8a;
-      --header-text: #f8fafc;
-      --thead-bg: #1e293b;
-      --thead-text: #e2e8f0;
-      --text: #f1f5f9;
+      --bg: #181c24;
+      --surface: #1e222b;
+      --surface-2: #262b36;
+      --header-bg: #232834;
+      --header-text: #e2e8f0;
+      --header-btn-bg: #2e3442;
+      --header-btn-border: #3d4454;
+      --thead-bg: #282e3b;
+      --thead-text: #cbd5e1;
+      --text: #e2e8f0;
       --text-muted: #94a3b8;
-      --border: #334155;
-      --today-bg: #172554;
-      --today-border: #3b82f6;
-      --selected-bg: #422006;
-      --weekend-bg: #0f172a;
+      --border: #323946;
+      --today-bg: #23334c;
+      --today-border: #60a5fa;
+      --selected-bg: #3b3324;
+      --weekend-bg: #1b1f27;
 
-      --s1-bg: #0c2d48;
-      --s1-text: #38bdf8;
-      --s1-border: #0284c7;
+      /* Soft pastel-on-dark pills without borders */
+      --s1-bg: rgba(56, 189, 248, 0.16);
+      --s1-text: #7dd3fc;
 
-      --s2-bg: #431407;
-      --s2-text: #fb923c;
-      --s2-border: #ea580c;
+      --s2-bg: rgba(251, 146, 60, 0.17);
+      --s2-text: #fdba74;
 
-      --s3-bg: #2e1065;
-      --s3-text: #c084fc;
-      --s3-border: #7c3aed;
+      --s3-bg: rgba(167, 139, 250, 0.17);
+      --s3-text: #c4b5fd;
 
-      --soff-bg: #1e293b;
-      --soff-text: #94a3b8;
-      --soff-border: #334155;
+      --soff-bg: rgba(148, 163, 184, 0.10);
+      --soff-text: #64748b;
     }
 
     * {
@@ -98,7 +97,7 @@
       overflow: hidden;
     }
 
-    /* Fixed Top App Bar */
+    /* Clean Top Bar matching reference (without "Бригади Абвгд" subtitle) */
     .app-header {
       position: fixed;
       top: 0;
@@ -108,34 +107,51 @@
       padding-top: env(safe-area-inset-top);
       background: var(--header-bg);
       color: var(--header-text);
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-left: 12px;
+      padding-left: 14px;
       padding-right: 12px;
       z-index: 40;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+    }
+
+    .app-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .app-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: #2563eb;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 5px rgba(37, 99, 235, 0.28);
     }
 
     .app-title {
       font-size: 18px;
       font-weight: 700;
-      letter-spacing: 0.2px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      letter-spacing: 0.1px;
     }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
     }
 
-    .icon-btn {
-      background: rgba(255, 255, 255, 0.16);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      color: #ffffff;
+    .hdr-btn {
+      background: var(--header-btn-bg);
+      border: 1px solid var(--header-btn-border);
+      color: var(--header-text);
       border-radius: 10px;
       height: 36px;
       padding: 0 11px;
@@ -148,11 +164,17 @@
       gap: 5px;
     }
 
-    .icon-btn:active {
+    .hdr-btn.icon-only {
+      width: 36px;
+      padding: 0;
+      font-size: 16px;
+    }
+
+    .hdr-btn:active {
       transform: scale(0.96);
     }
 
-    /* Fixed Column Header Bar (eliminates overlap with 1st day row) */
+    /* Fixed 6-Column Header Bar */
     .grid-header {
       position: fixed;
       top: calc(var(--top-bar-h) + env(safe-area-inset-top));
@@ -161,7 +183,7 @@
       height: var(--thead-h);
       background: var(--thead-bg);
       color: var(--thead-text);
-      border-bottom: 2px solid var(--border);
+      border-bottom: 1px solid var(--border);
       display: grid;
       grid-template-columns: 74px repeat(5, 1fr);
       align-items: center;
@@ -169,7 +191,6 @@
       font-weight: 700;
       font-size: 15px;
       text-align: center;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
     }
 
     .grid-header div {
@@ -184,7 +205,7 @@
       border-right: none;
     }
 
-    /* Scrollable Schedule Area strictly bounded between grid-header and bottom-bar */
+    /* Scrollable Schedule Area */
     .schedule-scroll {
       position: fixed;
       top: calc(var(--top-bar-h) + var(--thead-h) + env(safe-area-inset-top));
@@ -248,7 +269,7 @@
 
     .day-row.weekend .date-dow,
     .day-row.weekend .date-num {
-      color: #ef4444;
+      color: #f87171;
     }
 
     .day-row.today .date-num {
@@ -279,6 +300,7 @@
       border-right: none;
     }
 
+    /* Borderless background pill for shift number or "-" */
     .shift-pill {
       width: 34px;
       height: 30px;
@@ -288,31 +310,27 @@
       justify-content: center;
       font-size: 15px;
       font-weight: 800;
-      border: 1.5px solid transparent;
+      border: none;
     }
 
     .s-1 {
       background: var(--s1-bg);
       color: var(--s1-text);
-      border-color: var(--s1-border);
     }
 
     .s-2 {
       background: var(--s2-bg);
       color: var(--s2-text);
-      border-color: var(--s2-border);
     }
 
     .s-3 {
       background: var(--s3-bg);
       color: var(--s3-text);
-      border-color: var(--s3-border);
     }
 
     .s-off {
       background: var(--soff-bg);
       color: var(--soff-text);
-      border-color: var(--soff-border);
     }
 
     .cell-tags {
@@ -354,7 +372,7 @@
       right: 4px;
     }
 
-    /* Bottom Navigation Bar (Clean styling + 1-row << < MM.YYYY > >> logic) */
+    /* Bottom 1-Row Navigation Bar */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -362,7 +380,7 @@
       right: 0;
       height: calc(var(--bottom-bar-h) + env(safe-area-inset-bottom));
       padding-bottom: env(safe-area-inset-bottom);
-      background: var(--surface);
+      background: var(--header-bg);
       border-top: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -371,7 +389,6 @@
       padding-right: 10px;
       gap: 6px;
       z-index: 40;
-      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .nav-btn {
@@ -422,7 +439,7 @@
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(15, 23, 42, 0.55);
       display: none;
       align-items: flex-end;
       justify-content: center;
@@ -451,7 +468,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
     }
 
     .modal-header {
@@ -506,9 +523,9 @@
     }
 
     .btn-primary {
-      background: #1976d2;
+      background: #2563eb;
       color: #ffffff;
-      border-color: #1565c0;
+      border-color: #1d4ed8;
     }
 
     .btn-danger {
@@ -540,7 +557,7 @@
     }
 
     body.dark .menu-item.install-highlight {
-      background: #172554;
+      background: #23334c;
       border-color: #3b82f6;
       color: #93c5fd;
     }
@@ -562,7 +579,7 @@
     input[type="number"],
     select {
       width: 100%;
-      padding: 9px 11px;
+      padding: 9px 10px;
       border-radius: 9px;
       border: 1px solid var(--border);
       background: var(--surface-2);
@@ -579,7 +596,7 @@
     .chip {
       padding: 7px 11px;
       border-radius: 8px;
-      border: 1.5px solid var(--border);
+      border: 1px solid var(--border);
       background: var(--surface-2);
       color: var(--text);
       font-size: 13px;
@@ -589,9 +606,9 @@
     }
 
     .chip.active {
-      background: #1976d2;
+      background: #2563eb;
       color: #fff;
-      border-color: #1976d2;
+      border-color: #2563eb;
     }
 
     .chip.active-d {
@@ -606,17 +623,40 @@
       border-color: #059669;
     }
 
-    .pattern-row {
+    .shift-seq-card {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .shift-seq-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13.5px;
+      font-weight: 700;
+    }
+
+    .shift-seq-preview {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    .five-days-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: 6px;
     }
 
-    .offset-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 6px;
+    .five-days-grid select {
       text-align: center;
+      font-weight: 700;
+      padding: 7px 4px;
     }
 
     .list-item {
@@ -644,12 +684,16 @@
 </head>
 <body>
 
-  <!-- Top Header -->
+  <!-- Clean Top Header (matching reference without "Бригади Абвгд") -->
   <header class="app-header">
-    <div class="app-title">📅 Графік змін</div>
+    <div class="app-brand">
+      <div class="app-logo">📅</div>
+      <div class="app-title">Графік змін</div>
+    </div>
     <div class="header-actions">
-      <button id="headerInstallBtn" class="icon-btn" style="display:none;" onclick="triggerInstall()">📲 Встановити</button>
-      <button class="icon-btn" onclick="openModal('menuModal')">☰ Меню</button>
+      <button id="headerInstallBtn" class="hdr-btn" style="display:none;" onclick="triggerInstall()">📲</button>
+      <button id="themeHeaderBtn" class="hdr-btn icon-only" title="Змінити тему" onclick="toggleTheme()">🌙</button>
+      <button class="hdr-btn" onclick="openModal('menuModal')">☰ Меню</button>
     </div>
   </header>
 
@@ -695,10 +739,6 @@
           <span>🎂 Дні народження (імпорт Excel)</span>
           <span>›</span>
         </button>
-        <button class="menu-item" onclick="toggleTheme()">
-          <span>🌓 Змінити тему (світла / темна)</span>
-          <span id="themeLabel">Світла</span>
-        </button>
         <button class="menu-item" onclick="exportBackup()">
           <span>💾 Експорт резервної копії (JSON)</span>
           <span>›</span>
@@ -712,7 +752,7 @@
     </div>
   </div>
 
-  <!-- Install Instructions Modal (Fallback when browser blocks auto-prompt) -->
+  <!-- Install Instructions Modal -->
   <div id="installHelpModal" class="modal-backdrop" onclick="backdropClose(event, 'installHelpModal')">
     <div class="modal-card">
       <div class="modal-header">
@@ -723,14 +763,14 @@
         <div id="installStatusText" class="hint-box"></div>
         <div class="hint-box">
           <strong>Android (Google Chrome):</strong><br/>
-          1. Відкрийте сайт за посиланням <b>https://</b> (наприклад, на GitHub Pages або Vercel).<br/>
-          2. Натисніть <b>⋮</b> (три крапки у правому верхньому куті браузера).<br/>
+          1. Відкрийте сайт за посиланням <b>https://</b> (GitHub Pages або Vercel).<br/>
+          2. Натисніть <b>⋮</b> у правому верхньому куті браузера.<br/>
           3. Оберіть <b>«Додати на головний екран»</b> або <b>«Встановити додаток»</b>.
         </div>
         <div class="hint-box">
           <strong>iPhone / iPad (Safari):</strong><br/>
-          1. Натисніть кнопку <b>«Поділитися»</b> (квадрат зі стрілкою вгору).<br/>
-          2. Прогорніть вниз і натисніть <b>«На початковий екран»</b>.
+          1. Натисніть <b>«Поділитися»</b> (квадрат зі стрілкою вгору).<br/>
+          2. Оберіть <b>«На початковий екран»</b>.
         </div>
       </div>
       <div class="modal-footer">
@@ -739,7 +779,7 @@
     </div>
   </div>
 
-  <!-- Cell Edit Modal (Д, Екзамени, Перевизначення зміни) -->
+  <!-- Cell Edit Modal -->
   <div id="cellModal" class="modal-backdrop" onclick="backdropClose(event, 'cellModal')">
     <div class="modal-card">
       <div class="modal-header">
@@ -821,7 +861,7 @@
     </div>
   </div>
 
-  <!-- Pattern Settings Modal -->
+  <!-- Pattern Settings Modal (Anchor date + 5 days per shift А..Д -> auto 15-day cycle 111--333--222--) -->
   <div id="patternModal" class="modal-backdrop" onclick="backdropClose(event, 'patternModal')">
     <div class="modal-card">
       <div class="modal-header">
@@ -830,39 +870,15 @@
       </div>
       <div class="modal-body">
         <div class="hint-box">
-          Стандартний цикл (15 днів): <b>1, 1, 1, -, -, 3, 3, 3, -, -, 2, 2, 2, -, -</b>, далі повтор. Ви можете задати свій шаблон на 5 або більше днів і зсув для кожної зміни (А–Д).
-        </div>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div class="field-group">
-            <div class="field-label">Опорна дата початку</div>
-            <input id="cfgAnchorDate" type="date" />
-          </div>
-          <div class="field-group">
-            <div class="field-label">Довжина циклу (днів)</div>
-            <div style="display:flex;gap:4px;">
-              <input id="cfgCycleLen" type="number" min="5" max="30" onchange="rebuildPatternInputs()" />
-              <button class="btn" title="5-денний шаблон" onclick="setCycleLen(5)">5</button>
-              <button class="btn" title="15-денний стандарт" onclick="setCycleLen(15)">15</button>
-            </div>
-          </div>
+          Задайте <b>опорну дату</b> та перші <b>5 днів</b> для кожної зміни (А, Б, В, Г, Д). Далі графік автоматично продовжується за циклом: <b>1 1 1 - - 3 3 3 - - 2 2 2 - -</b> по колу.
         </div>
 
         <div class="field-group">
-          <div class="field-label">Порядок змін у циклі (День 1, 2, 3...)</div>
-          <div id="patternDaysGrid" class="pattern-row"></div>
+          <div class="field-label">Опорна дата відліку (День 1)</div>
+          <input id="cfgAnchorDate" type="date" onchange="updateAllShiftPreviews()" />
         </div>
 
-        <div class="field-group">
-          <div class="field-label">Зсув старту (в днях) для кожної зміни</div>
-          <div class="offset-grid">
-            <div><div class="field-label">Зміна А</div><input id="off_0" type="number" min="0" max="29" /></div>
-            <div><div class="field-label">Зміна Б</div><input id="off_1" type="number" min="0" max="29" /></div>
-            <div><div class="field-label">Зміна В</div><input id="off_2" type="number" min="0" max="29" /></div>
-            <div><div class="field-label">Зміна Г</div><input id="off_3" type="number" min="0" max="29" /></div>
-            <div><div class="field-label">Зміна Д</div><input id="off_4" type="number" min="0" max="29" /></div>
-          </div>
-        </div>
+        <div id="shiftsConfigContainer" style="display:flex;flex-direction:column;gap:8px;"></div>
       </div>
       <div class="modal-footer">
         <button class="btn" onclick="resetDefaultPattern()">За замовчуванням</button>
@@ -902,15 +918,30 @@
   <script>
     const SHIFTS = ['А', 'Б', 'В', 'Г', 'Д'];
     const DOW_UA = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
-    const DEFAULT_PATTERN = ['1','1','1','-','-','3','3','3','-','-','2','2','2','-','-'];
 
-    const STORAGE_KEY = 'shift_schedule_pwa_v2';
+    // Master 15-day repeating cycle: 111--333--222--
+    const MASTER_CYCLE = ['1','1','1','-','-','3','3','3','-','-','2','2','2','-','-'];
+
+    // Default 5-day starts from 01.01.2026:
+    // А: 1--33 (index 2 in MASTER_CYCLE -> 1, -, -, 3, 3, 3, -, -, 2, 2, 2, -, -, 1, 1)
+    // Б: --222 (index 8 in MASTER_CYCLE -> -, -, 2, 2, 2, -, -, 1, 1, 1, -, -, 3, 3, 3)
+    // В: -111- (index 14 in MASTER_CYCLE -> -, 1, 1, 1, -, -, 3, 3, 3, -, -, 2, 2, 2, -)
+    // Г: 333-- (index 5 in MASTER_CYCLE -> 3, 3, 3, -, -, 2, 2, 2, -, -, 1, 1, 1, -, -)
+    // Д: 22--1 (index 11 in MASTER_CYCLE -> 2, 2, -, -, 1, 1, 1, -, -, 3, 3, 3, -, -, 2)
+    const DEFAULT_FIVE_DAYS = [
+      ['1', '-', '-', '3', '3'], // А
+      ['-', '-', '2', '2', '2'], // Б
+      ['-', '1', '1', '1', '-'], // В
+      ['3', '3', '3', '-', '-'], // Г
+      ['2', '2', '-', '-', '1']  // Д
+    ];
+
+    const STORAGE_KEY = 'shift_schedule_pwa_v3';
 
     let state = {
       theme: 'light',
       anchorDate: '2026-01-01',
-      pattern: [...DEFAULT_PATTERN],
-      offsets: [0, 3, 6, 9, 12],
+      fiveDays: DEFAULT_FIVE_DAYS.map((arr) => [...arr]),
       cells: {},      // "YYYY-MM-DD_0": { override: '1'|'2'|'3'|'-'|null, extraD: bool, exams: [], note: '' }
       events: {},     // "YYYY-MM-DD": [ "Текст події" ]
       birthdays: []   // [ { mmdd: "05-14", name: "Іванов І.І.", shift: "А" } ]
@@ -974,13 +1005,16 @@
       openModal('installHelpModal');
     }
 
-    // --- Storage ---
+    // --- Storage & Theme ---
     function loadState() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
           state = { ...state, ...parsed };
+          if (!Array.isArray(state.fiveDays) || state.fiveDays.length !== 5) {
+            state.fiveDays = DEFAULT_FIVE_DAYS.map((arr) => [...arr]);
+          }
         }
       } catch (e) {}
       applyTheme();
@@ -993,9 +1027,12 @@
     }
 
     function applyTheme() {
-      document.body.classList.toggle('dark', state.theme === 'dark');
-      const lbl = document.getElementById('themeLabel');
-      if (lbl) lbl.textContent = state.theme === 'dark' ? 'Темна' : 'Світла';
+      const isDark = state.theme === 'dark';
+      document.body.classList.toggle('dark', isDark);
+      const btn = document.getElementById('themeHeaderBtn');
+      if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+      const metaTheme = document.getElementById('metaThemeColor');
+      if (metaTheme) metaTheme.setAttribute('content', isDark ? '#232834' : '#ffffff');
     }
 
     function toggleTheme() {
@@ -1029,14 +1066,47 @@
       return Math.floor((utc2 - utc1) / 86400000);
     }
 
-    // --- Shift Calculation ---
+    // --- Automatic Shift Cycle Resolution from 5-Day Start ---
+    // Finds where the 5-day sequence sits in MASTER_CYCLE (111--333--222--),
+    // and continues automatically with 111--333--222-- forever.
+    function buildFull15DayCycle(fiveDayArr) {
+      const len = MASTER_CYCLE.length; // 15
+      let bestStartIdx = -1;
+      let bestScore = -1;
+
+      for (let start = 0; start < len; start++) {
+        let score = 0;
+        for (let i = 0; i < 5; i++) {
+          if (MASTER_CYCLE[(start + i) % len] === fiveDayArr[i]) {
+            score++;
+          }
+        }
+        if (score > bestScore) {
+          bestScore = score;
+          bestStartIdx = start;
+        }
+      }
+
+      const cycle = [];
+      for (let i = 0; i < len; i++) {
+        if (i < 5) {
+          // Always honor exact user-entered 5 days for days 1..5
+          cycle.push(fiveDayArr[i]);
+        } else {
+          cycle.push(MASTER_CYCLE[(bestStartIdx + i) % len]);
+        }
+      }
+      return cycle;
+    }
+
     function getScheduledShift(dateObj, shiftIdx) {
       const anchor = parseISODate(state.anchorDate || '2026-01-01');
-      const len = state.pattern.length || 15;
-      const offset = Number(state.offsets[shiftIdx] || 0);
-      const delta = diffDays(anchor, dateObj) + offset;
+      const fiveDayArr = state.fiveDays[shiftIdx] || DEFAULT_FIVE_DAYS[shiftIdx];
+      const fullCycle = buildFull15DayCycle(fiveDayArr);
+      const len = fullCycle.length; // 15
+      const delta = diffDays(anchor, dateObj);
       const idx = ((delta % len) + len) % len;
-      return state.pattern[idx] || '-';
+      return fullCycle[idx] || '-';
     }
 
     // --- Render Schedule ---
@@ -1287,72 +1357,88 @@
       renderSchedule();
     }
 
-    // --- Pattern Settings ---
+    // --- Pattern Settings (Anchor Date + 5-day sequences for Зміна А..Д) ---
     function openPatternModal() {
-      document.getElementById('cfgAnchorDate').value = state.anchorDate;
-      document.getElementById('cfgCycleLen').value = state.pattern.length;
-      for (let i = 0; i < 5; i++) {
-        document.getElementById(`off_${i}`).value = state.offsets[i] ?? 0;
-      }
-      renderPatternSelects(state.pattern);
+      document.getElementById('cfgAnchorDate').value = state.anchorDate || '2026-01-01';
+      renderShiftsConfigUI(state.fiveDays);
       openModal('patternModal');
     }
 
-    function setCycleLen(len) {
-      document.getElementById('cfgCycleLen').value = len;
-      rebuildPatternInputs();
-    }
+    function renderShiftsConfigUI(fiveDaysMatrix) {
+      const container = document.getElementById('shiftsConfigContainer');
+      const anchorStr = document.getElementById('cfgAnchorDate').value || '2026-01-01';
+      const anchorDate = parseISODate(anchorStr);
 
-    function rebuildPatternInputs() {
-      let len = parseInt(document.getElementById('cfgCycleLen').value, 10) || 15;
-      len = Math.max(5, Math.min(30, len));
-      document.getElementById('cfgCycleLen').value = len;
-      const currentVals = Array.from(document.querySelectorAll('.pat-day-sel')).map((s) => s.value);
-      const nextPattern = [];
-      for (let i = 0; i < len; i++) {
-        nextPattern.push(currentVals[i] || DEFAULT_PATTERN[i % DEFAULT_PATTERN.length]);
+      let html = '';
+      for (let sIdx = 0; sIdx < 5; sIdx++) {
+        const arr = fiveDaysMatrix[sIdx] || DEFAULT_FIVE_DAYS[sIdx];
+        const full15 = buildFull15DayCycle(arr);
+        html += `<div class="shift-seq-card">`;
+        html += `<div class="shift-seq-header">`;
+        html += `<span>Зміна ${SHIFTS[sIdx]}</span>`;
+        html += `<span id="prev_shift_${sIdx}" class="shift-seq-preview">15 дн: ${full15.join('')}</span>`;
+        html += `</div>`;
+        html += `<div class="five-days-grid">`;
+        for (let dIdx = 0; dIdx < 5; dIdx++) {
+          const dDate = new Date(anchorDate);
+          dDate.setDate(anchorDate.getDate() + dIdx);
+          const lbl = `${pad2(dDate.getDate())}.${pad2(dDate.getMonth() + 1)}`;
+          const val = arr[dIdx];
+          html += `<div>`;
+          html += `<div class="day-lbl-${dIdx}" style="font-size:10px;color:var(--text-muted);text-align:center;margin-bottom:2px;">${lbl}</div>`;
+          html += `<select id="s_${sIdx}_d_${dIdx}" onchange="updateSingleShiftPreview(${sIdx})">`;
+          html += `<option value="1" ${val === '1' ? 'selected' : ''}>1</option>`;
+          html += `<option value="2" ${val === '2' ? 'selected' : ''}>2</option>`;
+          html += `<option value="3" ${val === '3' ? 'selected' : ''}>3</option>`;
+          html += `<option value="-" ${val === '-' ? 'selected' : ''}>-</option>`;
+          html += `</select>`;
+          html += `</div>`;
+        }
+        html += `</div></div>`;
       }
-      renderPatternSelects(nextPattern);
+      container.innerHTML = html;
     }
 
-    function renderPatternSelects(arr) {
-      const grid = document.getElementById('patternDaysGrid');
-      grid.innerHTML = arr
-        .map(
-          (val, idx) => `
-          <div>
-            <div style="font-size:10px;color:var(--text-muted);text-align:center;">День ${idx + 1}</div>
-            <select class="pat-day-sel">
-              <option value="1" ${val === '1' ? 'selected' : ''}>1</option>
-              <option value="2" ${val === '2' ? 'selected' : ''}>2</option>
-              <option value="3" ${val === '3' ? 'selected' : ''}>3</option>
-              <option value="-" ${val === '-' ? 'selected' : ''}>-</option>
-            </select>
-          </div>`
-        )
-        .join('');
+    function updateSingleShiftPreview(sIdx) {
+      const arr = [];
+      for (let dIdx = 0; dIdx < 5; dIdx++) {
+        arr.push(document.getElementById(`s_${sIdx}_d_${dIdx}`).value);
+      }
+      const full15 = buildFull15DayCycle(arr);
+      const prevEl = document.getElementById(`prev_shift_${sIdx}`);
+      if (prevEl) prevEl.textContent = `15 дн: ${full15.join('')}`;
+    }
+
+    function updateAllShiftPreviews() {
+      const anchorStr = document.getElementById('cfgAnchorDate').value || '2026-01-01';
+      const anchorDate = parseISODate(anchorStr);
+      for (let dIdx = 0; dIdx < 5; dIdx++) {
+        const dDate = new Date(anchorDate);
+        dDate.setDate(anchorDate.getDate() + dIdx);
+        const lbl = `${pad2(dDate.getDate())}.${pad2(dDate.getMonth() + 1)}`;
+        document.querySelectorAll(`.day-lbl-${dIdx}`).forEach((el) => {
+          el.textContent = lbl;
+        });
+      }
     }
 
     function resetDefaultPattern() {
       document.getElementById('cfgAnchorDate').value = '2026-01-01';
-      document.getElementById('cfgCycleLen').value = 15;
-      const defOffsets = [0, 3, 6, 9, 12];
-      for (let i = 0; i < 5; i++) {
-        document.getElementById(`off_${i}`).value = defOffsets[i];
-      }
-      renderPatternSelects(DEFAULT_PATTERN);
+      renderShiftsConfigUI(DEFAULT_FIVE_DAYS);
     }
 
     function savePatternSettings() {
       const anchor = document.getElementById('cfgAnchorDate').value || '2026-01-01';
-      const sels = Array.from(document.querySelectorAll('.pat-day-sel')).map((s) => s.value);
-      const offsets = [];
-      for (let i = 0; i < 5; i++) {
-        offsets.push(parseInt(document.getElementById(`off_${i}`).value, 10) || 0);
+      const nextFiveDays = [];
+      for (let sIdx = 0; sIdx < 5; sIdx++) {
+        const row = [];
+        for (let dIdx = 0; dIdx < 5; dIdx++) {
+          row.push(document.getElementById(`s_${sIdx}_d_${dIdx}`).value);
+        }
+        nextFiveDays.push(row);
       }
       state.anchorDate = anchor;
-      state.pattern = sels.length ? sels : [...DEFAULT_PATTERN];
-      state.offsets = offsets;
+      state.fiveDays = nextFiveDays;
       saveState();
       closeModal('patternModal');
       renderSchedule();
