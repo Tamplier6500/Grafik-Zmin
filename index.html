@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta id="metaThemeColor" name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Графік змін" />
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
@@ -40,16 +40,12 @@
       --s3-bg: #ede9fe;
       --s3-text: #6d28d9;
 
-      --sr-bg: #dcfce7;
-      --sr-text: #15803d;
-
       --soff-bg: #f1f5f9;
       --soff-text: #94a3b8;
 
       --top-bar-h: 54px;
       --thead-h: 42px;
       --bottom-bar-h: 58px;
-      --grid-cols: 76px repeat(5, 1fr);
     }
 
     body.dark {
@@ -79,89 +75,29 @@
       --s3-bg: rgba(167, 139, 250, 0.17);
       --s3-text: #c4b5fd;
 
-      --sr-bg: rgba(34, 197, 94, 0.18);
-      --sr-text: #86efac;
-
       --soff-bg: rgba(148, 163, 184, 0.10);
       --soff-text: #64748b;
-    }
-
-    body.has-custom-col {
-      --grid-cols: 70px repeat(6, 1fr);
     }
 
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
-      -webkit-touch-callout: none !important;
-      -webkit-user-select: none !important;
-      user-select: none !important;
+      -webkit-touch-callout: none;
       margin: 0;
       padding: 0;
     }
 
-    html {
+    html, body {
       height: 100%;
-      min-height: 100vh;
-      min-height: 100dvh;
-      background-color: var(--header-bg);
-      overflow: hidden;
-    }
-
-    body {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      min-height: 100vh;
-      min-height: 100dvh;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial, sans-serif;
-      background-color: var(--header-bg);
+      background: var(--header-bg);
       color: var(--text);
       overflow: hidden;
-      overscroll-behavior: none;
     }
 
     input, textarea, select {
-      -webkit-touch-callout: default !important;
-      -webkit-user-select: text !important;
-      user-select: text !important;
-    }
-
-    /* Update Banner */
-    .update-banner {
-      position: fixed;
-      top: calc(var(--top-bar-h) + env(safe-area-inset-top) + 6px);
-      left: 10px;
-      right: 10px;
-      background: #1d4ed8;
-      color: #ffffff;
-      border-radius: 12px;
-      padding: 10px 12px;
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      z-index: 90;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
-      font-size: 13.5px;
-      font-weight: 600;
-    }
-
-    .update-banner.show {
-      display: flex;
-    }
-
-    .update-banner-btn {
-      background: #ffffff;
-      color: #1d4ed8;
-      border: none;
-      border-radius: 8px;
-      padding: 6px 12px;
-      font-size: 13px;
-      font-weight: 800;
-      cursor: pointer;
-      white-space: nowrap;
+      -webkit-touch-callout: default;
+      user-select: text;
     }
 
     /* Clean Top Bar */
@@ -259,7 +195,7 @@
       justify-content: center;
     }
 
-    /* Fixed Table Header Bar */
+    /* Fixed 6-Column Header Bar */
     .grid-header {
       position: fixed;
       top: calc(var(--top-bar-h) + env(safe-area-inset-top));
@@ -270,11 +206,11 @@
       color: var(--thead-text);
       border-bottom: 1px solid var(--border);
       display: grid;
-      grid-template-columns: var(--grid-cols);
+      grid-template-columns: 78px repeat(5, 1fr);
       align-items: center;
       z-index: 35;
       font-weight: 700;
-      font-size: 14.5px;
+      font-size: 15px;
       text-align: center;
     }
 
@@ -287,8 +223,6 @@
       border-right: 1px solid var(--border);
       position: relative;
       line-height: 1.05;
-      overflow: hidden;
-      padding: 0 2px;
     }
 
     .grid-header > div:last-child {
@@ -297,6 +231,7 @@
 
     .shift-col-hdr {
       cursor: pointer;
+      user-select: none;
       transition: background 0.12s;
     }
 
@@ -305,10 +240,10 @@
     }
 
     .shift-col-sub {
-      font-size: 9px;
+      font-size: 9.5px;
       font-weight: 600;
       color: var(--text-muted);
-      max-width: 96%;
+      max-width: 92%;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -317,9 +252,9 @@
     .shift-col-dot {
       position: absolute;
       top: 4px;
-      right: 4px;
-      width: 5px;
-      height: 5px;
+      right: 5px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: #2563eb;
     }
@@ -336,16 +271,16 @@
       background: var(--surface);
       scroll-padding-top: 8px;
       scroll-padding-bottom: 12px;
-      touch-action: pan-y;
     }
 
     .day-row {
       display: grid;
-      grid-template-columns: var(--grid-cols);
+      grid-template-columns: 78px repeat(5, 1fr);
       min-height: 54px;
       border-bottom: 1px solid var(--border);
       background: var(--surface);
       transition: background 0.12s;
+      user-select: none;
     }
 
     .day-row.weekend {
@@ -376,23 +311,24 @@
     }
 
     .pressing {
-      transform: scale(0.92);
-      opacity: 0.75;
+      transform: scale(0.93);
+      opacity: 0.78;
     }
 
     .date-cell {
-      padding: 4px 2px;
+      padding: 4px 3px;
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      user-select: none;
       position: relative;
     }
 
     .date-num {
-      font-size: 13.5px;
+      font-size: 14px;
       font-weight: 700;
       line-height: 1.15;
     }
@@ -428,7 +364,7 @@
       align-items: center;
       gap: 2px;
       margin-top: 2px;
-      font-size: 10.5px;
+      font-size: 11px;
       line-height: 1;
       max-width: 100%;
     }
@@ -436,9 +372,9 @@
     .tag-exam-date {
       background: #d97706;
       color: #fff;
-      font-size: 8px;
+      font-size: 8.5px;
       font-weight: 800;
-      padding: 1.5px 3.5px;
+      padding: 1.5px 4px;
       border-radius: 4px;
       line-height: 1.1;
       letter-spacing: 0.2px;
@@ -450,8 +386,9 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 4px 1px;
+      padding: 4px 2px;
       cursor: pointer;
+      user-select: none;
       position: relative;
     }
 
@@ -460,22 +397,15 @@
     }
 
     .shift-pill {
-      width: 32px;
+      width: 34px;
       height: 30px;
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14.5px;
+      font-size: 15px;
       font-weight: 800;
       border: none;
-      pointer-events: none;
-    }
-
-    body.has-custom-col .shift-pill {
-      width: 29px;
-      height: 28px;
-      font-size: 14px;
     }
 
     .s-1 {
@@ -493,11 +423,6 @@
       color: var(--s3-text);
     }
 
-    .s-r {
-      background: var(--sr-bg);
-      color: var(--sr-text);
-    }
-
     .s-off {
       background: var(--soff-bg);
       color: var(--soff-text);
@@ -510,15 +435,14 @@
       gap: 2px;
       margin-top: 2px;
       max-width: 100%;
-      pointer-events: none;
     }
 
     .tag-d {
       background: #dc2626;
       color: #fff;
-      font-size: 8.5px;
+      font-size: 9px;
       font-weight: 800;
-      padding: 1px 3.5px;
+      padding: 1px 4px;
       border-radius: 4px;
       line-height: 1.1;
     }
@@ -531,10 +455,9 @@
       position: absolute;
       top: 4px;
       right: 4px;
-      pointer-events: none;
     }
 
-    /* Bottom 1-Row Navigation Bar (Flush to bottom edge, no blue strip) */
+    /* Bottom 1-Row Navigation Bar (Only <<, Month.Year, >>) */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -542,8 +465,9 @@
       right: 0;
       height: calc(var(--bottom-bar-h) + env(safe-area-inset-bottom));
       padding-bottom: env(safe-area-inset-bottom);
-      background-color: var(--header-bg);
+      background: var(--header-bg);
       border-top: 1px solid var(--border);
+      border-bottom: none;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -551,6 +475,7 @@
       padding-right: 12px;
       gap: 10px;
       z-index: 40;
+      box-shadow: none;
     }
 
     .nav-btn {
@@ -567,6 +492,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      user-select: none;
       outline: none;
       -webkit-appearance: none;
       appearance: none;
@@ -606,13 +532,12 @@
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.58);
+      background: rgba(15, 23, 42, 0.55);
       display: none;
       align-items: flex-end;
       justify-content: center;
       z-index: 100;
       padding: 12px;
-      padding-bottom: calc(12px + env(safe-area-inset-bottom));
     }
 
     .modal-backdrop.open {
@@ -779,6 +704,7 @@
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
+      user-select: none;
     }
 
     .chip.active {
@@ -835,19 +761,6 @@
       padding: 7px 4px;
     }
 
-    .week-days-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-    }
-
-    .week-days-grid select {
-      text-align: center;
-      font-weight: 700;
-      padding: 6px 2px;
-      font-size: 13px;
-    }
-
     .list-item {
       padding: 8px 10px;
       border-radius: 8px;
@@ -883,97 +796,9 @@
     body.dark .holiday-banner {
       color: #fca5a5;
     }
-
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      cursor: pointer;
-    }
-
-    .toggle-row input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
-      accent-color: #2563eb;
-      cursor: pointer;
-    }
-
-    /* Onboarding Tour */
-    .tour-card {
-      background: var(--surface);
-      color: var(--text);
-      width: 100%;
-      max-width: 420px;
-      border-radius: 18px;
-      border: 1px solid var(--border);
-      padding: 20px 18px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
-    }
-
-    .tour-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 14px;
-      background: var(--today-bg);
-      color: var(--today-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-    }
-
-    .tour-title {
-      font-size: 18px;
-      font-weight: 800;
-    }
-
-    .tour-desc {
-      font-size: 14px;
-      line-height: 1.5;
-      color: var(--text-muted);
-    }
-
-    .tour-dots {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .tour-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--border);
-      transition: all 0.2s;
-    }
-
-    .tour-dot.active {
-      width: 20px;
-      border-radius: 4px;
-      background: #2563eb;
-    }
-
-    .tour-actions {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      padding-top: 4px;
-    }
   </style>
 </head>
 <body>
-
-  <!-- Update Available Banner -->
-  <div id="updateBanner" class="update-banner" role="alert">
-    <span id="updateBannerText">🚀 Доступна нова версія додатку!</span>
-    <button class="update-banner-btn" onclick="haptic('success'); applyAppUpdate()">Оновити</button>
-  </div>
 
   <!-- Clean Top Header -->
   <header class="app-header">
@@ -991,8 +816,15 @@
     </div>
   </header>
 
-  <!-- Fixed Table Header (Dynamic 6 or 7 columns) -->
-  <div id="gridHeader" class="grid-header" role="row"></div>
+  <!-- Fixed 6-column Table Header -->
+  <div class="grid-header" role="row">
+    <div>Дата</div>
+    <div id="colHdr_0" class="shift-col-hdr" onclick="haptic('light'); openShiftNoteModal(0)"><span>А</span></div>
+    <div id="colHdr_1" class="shift-col-hdr" onclick="haptic('light'); openShiftNoteModal(1)"><span>Б</span></div>
+    <div id="colHdr_2" class="shift-col-hdr" onclick="haptic('light'); openShiftNoteModal(2)"><span>В</span></div>
+    <div id="colHdr_3" class="shift-col-hdr" onclick="haptic('light'); openShiftNoteModal(3)"><span>Г</span></div>
+    <div id="colHdr_4" class="shift-col-hdr" onclick="haptic('light'); openShiftNoteModal(4)"><span>Д</span></div>
+  </div>
 
   <!-- Scrollable Schedule Table -->
   <main id="scheduleScroll" class="schedule-scroll"></main>
@@ -1003,25 +835,6 @@
     <button id="monthYearBtn" class="nav-center" title="Повернутися на сьогодні" onclick="haptic('medium'); goToday()">01.2026</button>
     <button class="nav-btn" title="Наступний місяць" onclick="haptic('light'); shiftMonth(1)">&gt;&gt;</button>
   </nav>
-
-  <!-- Onboarding / Quick Tour Modal -->
-  <div id="tourModal" class="modal-backdrop" style="align-items:center;">
-    <div class="tour-card">
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div id="tourIcon" class="tour-icon">👆</div>
-        <button class="btn" style="padding:5px 10px;font-size:12.5px;" onclick="haptic('light'); finishTour()">Пропустити</button>
-      </div>
-      <div>
-        <div id="tourTitle" class="tour-title">Виділення дня</div>
-        <div id="tourDesc" class="tour-desc" style="margin-top:6px;"></div>
-      </div>
-      <div id="tourDots" class="tour-dots"></div>
-      <div class="tour-actions">
-        <button id="tourPrevBtn" class="btn" onclick="haptic('light'); stepTour(-1)">Назад</button>
-        <button id="tourNextBtn" class="btn btn-primary" onclick="haptic('light'); stepTour(1)">Далі</button>
-      </div>
-    </div>
-  </div>
 
   <!-- Main Menu Modal -->
   <div id="menuModal" class="modal-backdrop" onclick="backdropClose(event, 'menuModal')">
@@ -1040,19 +853,11 @@
           <span id="menuExamCount">0</span>
         </button>
         <button class="menu-item" onclick="haptic('light'); closeModal('menuModal'); openPatternModal();">
-          <span>⚙️ Налаштування порядку змін та графіка</span>
+          <span>⚙️ Налаштування порядку змін</span>
           <span>›</span>
         </button>
         <button class="menu-item" onclick="haptic('light'); closeModal('menuModal'); openBirthdaysModal();">
           <span>🎂 Дні народження</span>
-          <span>›</span>
-        </button>
-        <button class="menu-item" onclick="haptic('light'); manualCheckForUpdates()">
-          <span>🔄 Перевірити оновлення</span>
-          <span id="updateCheckStatus" style="font-size:12px;color:var(--text-muted);">v1.7.0</span>
-        </button>
-        <button class="menu-item" onclick="haptic('light'); closeModal('menuModal'); startTour();">
-          <span>💡 Швидке ознайомлення з функціями</span>
           <span>›</span>
         </button>
         <button class="menu-item" onclick="haptic('light'); exportBackup()">
@@ -1064,7 +869,7 @@
           <span>›</span>
         </button>
         <input id="backupInput" type="file" accept=".json" style="display:none" onchange="importBackup(event)" />
-        <div class="version-footer">Версія додатку: <b>v1.7.0</b></div>
+        <div class="version-footer">Версія додатку: <b>v1.6.0</b></div>
       </div>
     </div>
   </div>
@@ -1132,7 +937,7 @@
     </div>
   </div>
 
-  <!-- Cell Edit Modal (Long-press or Double-tap on shift/custom cell) -->
+  <!-- Cell Edit Modal (Long-press on shift cell) -->
   <div id="cellModal" class="modal-backdrop" onclick="backdropClose(event, 'cellModal')">
     <div class="modal-card">
       <div class="modal-header">
@@ -1141,13 +946,12 @@
       </div>
       <div class="modal-body">
         <div class="field-group">
-          <div class="field-label">Позначка на цей день</div>
+          <div class="field-label">Номер зміни на цей день</div>
           <div id="shiftOverrideChips" class="chip-grid">
             <div class="chip" data-val="auto" onclick="haptic('light'); selectOverride('auto')">За графіком</div>
             <div class="chip" data-val="1" onclick="haptic('light'); selectOverride('1')">1</div>
             <div class="chip" data-val="2" onclick="haptic('light'); selectOverride('2')">2</div>
             <div class="chip" data-val="3" onclick="haptic('light'); selectOverride('3')">3</div>
-            <div class="chip" data-val="Р" onclick="haptic('light'); selectOverride('Р')">Р (Роб.)</div>
             <div class="chip" data-val="-" onclick="haptic('light'); selectOverride('-')">- (Вих.)</div>
           </div>
         </div>
@@ -1161,7 +965,7 @@
 
         <div class="field-group">
           <div class="field-label">Примітка до клітинки</div>
-          <input id="cellNoteInput" type="text" placeholder="Наприклад: підміна, інструктаж, відпустка..." />
+          <input id="cellNoteInput" type="text" placeholder="Наприклад: підміна, інструктаж..." />
         </div>
       </div>
       <div class="modal-footer">
@@ -1171,7 +975,7 @@
     </div>
   </div>
 
-  <!-- Day Modal (Long-press or Double-tap on date cell) -->
+  <!-- Day Modal (Long-press on date cell: Exams, Holidays, Birthdays, Events) -->
   <div id="dayModal" class="modal-backdrop" onclick="backdropClose(event, 'dayModal')">
     <div class="modal-card">
       <div class="modal-header">
@@ -1213,61 +1017,14 @@
     </div>
   </div>
 
-  <!-- Pattern & Custom Column Settings Modal -->
+  <!-- Pattern Settings Modal -->
   <div id="patternModal" class="modal-backdrop" onclick="backdropClose(event, 'patternModal')">
     <div class="modal-card">
       <div class="modal-header">
-        <span>Порядок змін та свій графік</span>
+        <span>Налаштування порядку змін</span>
         <button class="modal-close" onclick="haptic('light'); closeModal('patternModal')">&times;</button>
       </div>
       <div class="modal-body">
-        <!-- Custom Column Configuration -->
-        <div class="shift-seq-card" style="border-color:#3b82f6;">
-          <label class="toggle-row">
-            <span style="font-size:14px;font-weight:700;">➕ Додаткова колонка (свій графік)</span>
-            <input id="cfgCustomColEnabled" type="checkbox" onchange="haptic('light'); toggleCustomColCfgUI()" />
-          </label>
-          <div id="customColCfgFields" style="display:none;flex-direction:column;gap:8px;margin-top:4px;">
-            <div class="field-group">
-              <div class="field-label">Заголовок колонки (1–3 символи)</div>
-              <input id="cfgCustomColTitle" type="text" maxlength="4" placeholder="Я" />
-            </div>
-            <div class="field-group">
-              <div class="field-label">Шаблон по днях тижня (за замовчуванням Пн–Пт: Р)</div>
-              <div class="week-days-grid">
-                <div>
-                  <div style="font-size:10px;color:var(--text-muted);text-align:center;">Пн</div>
-                  <select id="cw_1"><option value="Р">Р</option><option value="-">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
-                </div>
-                <div>
-                  <div style="font-size:10px;color:var(--text-muted);text-align:center;">Вт</div>
-                  <select id="cw_2"><option value="Р">Р</option><option value="-">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
-                </div>
-                <div>
-                  <div style="font-size:10px;color:var(--text-muted);text-align:center;">Ср</div>
-                  <select id="cw_3"><option value="Р">Р</option><option value="-">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
-                </div>
-                <div>
-                  <div style="font-size:10px;color:var(--text-muted);text-align:center;">Чт</div>
-                  <select id="cw_4"><option value="Р">Р</option><option value="-">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
-                </div>
-                <div>
-                  <div style="font-size:10px;color:var(--text-muted);text-align:center;">Пт</div>
-                  <select id="cw_5"><option value="Р">Р</option><option value="-">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
-                </div>
-                <div>
-                  <div style="font-size:10px;color:#ef4444;text-align:center;">Сб</div>
-                  <select id="cw_6"><option value="-">-</option><option value="Р">Р</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
-                </div>
-                <div>
-                  <div style="font-size:10px;color:#ef4444;text-align:center;">Нд</div>
-                  <select id="cw_0"><option value="-">-</option><option value="Р">Р</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div class="hint-box">
           Задайте <b>опорну дату</b> та перші <b>5 днів</b> для кожної зміни (А, Б, В, Г, Д). Далі графік автоматично продовжується за циклом: <b>1 1 1 - - 3 3 3 - - 2 2 2 - -</b> по колу.
         </div>
@@ -1333,8 +1090,7 @@
   </div>
 
   <script>
-    const APP_VERSION = '1.7.0';
-    const APP_BUILD = 170;
+    const APP_VERSION = 'v1.6.0';
     const SHIFTS = ['А', 'Б', 'В', 'Г', 'Д'];
     const EXAM_TYPES = ['ОП', 'ПБ', 'ПТЕ', 'НПАОП', 'РБ', 'ПНЯРБ'];
     const DOW_UA = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
@@ -1349,23 +1105,14 @@
       ['2', '2', '-', '-', '1']  // Д
     ];
 
-    // Default custom schedule: Sun(0)='-', Mon(1)..Fri(5)='Р', Sat(6)='-'
-    const DEFAULT_CUSTOM_WEEK = ['-', 'Р', 'Р', 'Р', 'Р', 'Р', '-'];
-
-    const STORAGE_KEY = 'shift_schedule_pwa_v6';
+    const STORAGE_KEY = 'shift_schedule_pwa_v5';
 
     let state = {
       theme: 'light',
-      tourDone: false,
       anchorDate: '2026-01-01',
       fiveDays: DEFAULT_FIVE_DAYS.map((arr) => [...arr]),
-      shiftNotes: ['', '', '', '', '', ''], // 0..4 = А..Д, 5 = custom col
-      customCol: {
-        enabled: false,
-        title: 'Я',
-        week: [...DEFAULT_CUSTOM_WEEK]
-      },
-      cells: {},      // "YYYY-MM-DD_0..5": { override, extraD, note }
+      shiftNotes: ['', '', '', '', ''],
+      cells: {},      // "YYYY-MM-DD_0": { override, extraD, note }
       exams: {},      // "YYYY-MM-DD": [ "ОП", "ПБ" ]
       events: {},     // "YYYY-MM-DD": [ "Текст події" ]
       birthdays: []   // [ { mmdd: "05-14", name: "...", position: "...", shift: "А" } ]
@@ -1383,7 +1130,6 @@
     let tempCellData = { override: null, extraD: false, note: '' };
     let editingDayStr = null;
     let deferredInstallPrompt = null;
-    let waitingSW = null;
 
     // --- Haptic Feedback Helper ---
     function haptic(type = 'light') {
@@ -1391,23 +1137,8 @@
       try {
         if (type === 'light') navigator.vibrate(12);
         else if (type === 'medium') navigator.vibrate(25);
-        else if (type === 'long') navigator.vibrate(38);
+        else if (type === 'long') navigator.vibrate(35);
         else if (type === 'success') navigator.vibrate([15, 30, 15]);
-      } catch (e) {}
-    }
-
-    // --- Prevent Native Selection / Callout Menu ---
-    document.addEventListener('selectstart', (e) => {
-      const tag = e.target && e.target.tagName;
-      if (tag !== 'INPUT' && tag !== 'TEXTAREA') {
-        e.preventDefault();
-      }
-    });
-
-    function clearBrowserSelection() {
-      try {
-        const sel = window.getSelection && window.getSelection();
-        if (sel && sel.removeAllRanges) sel.removeAllRanges();
       } catch (e) {}
     }
 
@@ -1444,111 +1175,26 @@
       if (fixed[mmdd]) return fixed[mmdd];
 
       const easter = getOrthodoxEaster(y);
-      if (toISODate(dateObj) === toISODate(easter)) return 'Великдень (Пасха)';
+      if (toISODate(dateObj) === toISODate(easter)) {
+        return 'Великдень (Пасха)';
+      }
 
       const trinity = new Date(easter);
       trinity.setDate(easter.getDate() + 49);
-      if (toISODate(dateObj) === toISODate(trinity)) return 'Трійця';
+      if (toISODate(dateObj) === toISODate(trinity)) {
+        return 'Трійця';
+      }
 
       return null;
     }
 
-    // --- Service Worker & Version Update Checking ---
-    function showUpdateBanner(newVerText) {
-      const banner = document.getElementById('updateBanner');
-      const txt = document.getElementById('updateBannerText');
-      if (newVerText) {
-        txt.textContent = `🚀 Доступне оновлення (${newVerText})`;
-      }
-      banner.classList.add('show');
-    }
-
-    function applyAppUpdate() {
-      if (waitingSW) {
-        waitingSW.postMessage({ type: 'SKIP_WAITING' });
-      }
-      if ('caches' in window) {
-        caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k)))).finally(() => {
-          window.location.reload();
-        });
-      } else {
-        window.location.reload();
-      }
-    }
-
-    async function checkRemoteVersion(isManual = false) {
-      const statusEl = document.getElementById('updateCheckStatus');
-      if (isManual && statusEl) statusEl.textContent = 'Перевірка...';
-
-      if (location.protocol !== 'http:' && location.protocol !== 'https:') {
-        if (isManual && statusEl) statusEl.textContent = `v${APP_VERSION}`;
-        return;
-      }
-
-      try {
-        const res = await fetch(`./version.json?t=${Date.now()}`, { cache: 'no-store' });
-        if (res.ok) {
-          const data = await res.json();
-          const remoteBuild = Number(data.build || 0);
-          const remoteVer = String(data.version || '');
-          if (remoteBuild > APP_BUILD || (remoteVer && remoteVer !== APP_VERSION)) {
-            showUpdateBanner(`v${remoteVer}`);
-            if (isManual && statusEl) statusEl.textContent = `Нова: v${remoteVer}`;
-            return;
-          }
-        }
-        if (isManual && statusEl) statusEl.textContent = `Актуальна (v${APP_VERSION})`;
-      } catch (e) {
-        if (isManual && statusEl) statusEl.textContent = `Офлайн (v${APP_VERSION})`;
-      }
-    }
-
-    function manualCheckForUpdates() {
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistration().then((reg) => {
-          if (reg) reg.update().catch(() => {});
-        });
-      }
-      checkRemoteVersion(true);
-    }
-
+    // --- Service Worker & PWA Install Handling ---
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').then((reg) => {
-          if (reg.waiting) {
-            waitingSW = reg.waiting;
-            showUpdateBanner();
-          }
-          reg.addEventListener('updatefound', () => {
-            const newWorker = reg.installing;
-            if (!newWorker) return;
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                waitingSW = newWorker;
-                showUpdateBanner();
-              }
-            });
-          });
-          setInterval(() => reg.update().catch(() => {}), 30 * 60 * 1000);
-        }).catch(() => {});
-
-        let refreshing = false;
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          if (!refreshing) {
-            refreshing = true;
-            window.location.reload();
-          }
-        });
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
       });
     }
 
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        checkRemoteVersion(false);
-      }
-    });
-
-    // --- PWA Install Handling ---
     function isAppInstalled() {
       return (
         window.matchMedia('(display-mode: standalone)').matches ||
@@ -1599,7 +1245,7 @@
       if (isAppInstalled()) {
         statusEl.innerHTML = '✅ Додаток вже встановлено.';
       } else if (!isHttps) {
-        statusEl.innerHTML = '⚠️ Зараз файл відкрито локально (<code>' + location.protocol + '</code>). Для системного встановлення завантажте файли на <b>GitHub Pages</b> або <b>Vercel</b> (по протоколу <b>https://</b>).';
+        statusEl.innerHTML = '⚠️ Зараз файл відкрито локально (<code>' + location.protocol + '</code>). Для появи системної кнопки встановлення завантажте файли на <b>GitHub Pages</b> або <b>Vercel</b> (по протоколу <b>https://</b>).';
       } else {
         statusEl.innerHTML = 'ℹ️ Встановити додаток можна через меню браузера (інструкція нижче).';
       }
@@ -1608,75 +1254,13 @@
       openModal('installHelpModal');
     }
 
-    // --- Onboarding Tour ---
-    const TOUR_STEPS = [
-      {
-        icon: '👆',
-        title: '1. Виділення рядка дня',
-        desc: 'Коротке натискання на будь-яку дату або клітинку зміни виділяє рядок, щоб зручно звіряти графік.'
-      },
-      {
-        icon: '✌️',
-        title: '2. Подвійний тап або утримання',
-        desc: 'Зробіть подвійний тап або утримайте палець на даті, щоб додати примітку чи екзамен. На клітинці зміни — щоб змінити номер зміни або поставити позначку «Д».'
-      },
-      {
-        icon: '📋',
-        title: '3. Свій власний графік',
-        desc: 'У «Меню → Налаштування порядку змін та графіка» можна увімкнути додаткову колонку після зміни Д (за замовчуванням Пн–Пт позначені літерою «Р») і налаштувати під себе.'
-      },
-      {
-        icon: '📅',
-        title: '4. Швидка навігація',
-        desc: 'Кнопки «<<» та «>>» внизу перемикають місяці, а натискання на дату по центру повертає на сьогоднішній день.'
-      }
-    ];
-
-    let tourIdx = 0;
-
-    function startTour() {
-      tourIdx = 0;
-      renderTourStep();
-      openModal('tourModal');
-    }
-
-    function renderTourStep() {
-      const step = TOUR_STEPS[tourIdx];
-      document.getElementById('tourIcon').textContent = step.icon;
-      document.getElementById('tourTitle').textContent = step.title;
-      document.getElementById('tourDesc').textContent = step.desc;
-
-      const dotsEl = document.getElementById('tourDots');
-      dotsEl.innerHTML = TOUR_STEPS.map((_, i) => `<div class="tour-dot ${i === tourIdx ? 'active' : ''}"></div>`).join('');
-
-      document.getElementById('tourPrevBtn').style.visibility = tourIdx === 0 ? 'hidden' : 'visible';
-      document.getElementById('tourNextBtn').textContent = tourIdx === TOUR_STEPS.length - 1 ? 'Готово' : 'Далі';
-    }
-
-    function stepTour(delta) {
-      const next = tourIdx + delta;
-      if (next < 0) return;
-      if (next >= TOUR_STEPS.length) {
-        finishTour();
-        return;
-      }
-      tourIdx = next;
-      renderTourStep();
-    }
-
-    function finishTour() {
-      state.tourDone = true;
-      saveState();
-      closeModal('tourModal');
-    }
-
     // --- Storage & Migration ---
     function loadState() {
       try {
         const raw =
           localStorage.getItem(STORAGE_KEY) ||
-          localStorage.getItem('shift_schedule_pwa_v5') ||
-          localStorage.getItem('shift_schedule_pwa_v4');
+          localStorage.getItem('shift_schedule_pwa_v4') ||
+          localStorage.getItem('shift_schedule_pwa_v3');
         if (raw) {
           const parsed = JSON.parse(raw);
           if (parsed && typeof parsed === 'object') {
@@ -1688,17 +1272,8 @@
       if (!Array.isArray(state.fiveDays) || state.fiveDays.length !== 5) {
         state.fiveDays = DEFAULT_FIVE_DAYS.map((arr) => [...arr]);
       }
-      if (!Array.isArray(state.shiftNotes)) {
-        state.shiftNotes = ['', '', '', '', '', ''];
-      }
-      while (state.shiftNotes.length < 6) {
-        state.shiftNotes.push('');
-      }
-      if (!state.customCol || typeof state.customCol !== 'object') {
-        state.customCol = { enabled: false, title: 'Я', week: [...DEFAULT_CUSTOM_WEEK] };
-      }
-      if (!Array.isArray(state.customCol.week) || state.customCol.week.length !== 7) {
-        state.customCol.week = [...DEFAULT_CUSTOM_WEEK];
+      if (!Array.isArray(state.shiftNotes) || state.shiftNotes.length !== 5) {
+        state.shiftNotes = ['', '', '', '', ''];
       }
       if (!state.cells || typeof state.cells !== 'object' || Array.isArray(state.cells)) {
         state.cells = {};
@@ -1713,8 +1288,22 @@
         state.birthdays = [];
       }
 
+      Object.keys(state.cells).forEach((k) => {
+        const c = state.cells[k];
+        if (c && Array.isArray(c.exams) && c.exams.length) {
+          const iso = k.split('_')[0];
+          if (!Array.isArray(state.exams[iso])) state.exams[iso] = [];
+          c.exams.forEach((ex) => {
+            const name = typeof ex === 'string' ? ex : ex.name;
+            if (name && !state.exams[iso].includes(name)) {
+              state.exams[iso].push(name);
+            }
+          });
+          delete c.exams;
+        }
+      });
+
       applyTheme();
-      applyCustomColLayout();
       updateInstallVisibility();
     }
 
@@ -1731,10 +1320,6 @@
       if (btn) btn.textContent = isDark ? '☀️' : '🌙';
       const metaTheme = document.getElementById('metaThemeColor');
       if (metaTheme) metaTheme.setAttribute('content', isDark ? '#232834' : '#ffffff');
-    }
-
-    function applyCustomColLayout() {
-      document.body.classList.toggle('has-custom-col', Boolean(state.customCol && state.customCol.enabled));
     }
 
     function toggleTheme() {
@@ -1797,11 +1382,6 @@
     }
 
     function getScheduledShift(dateObj, shiftIdx) {
-      if (shiftIdx === 5) {
-        const dow = dateObj.getDay();
-        const weekArr = (state.customCol && state.customCol.week) || DEFAULT_CUSTOM_WEEK;
-        return weekArr[dow] || '-';
-      }
       const anchor = parseISODate(state.anchorDate || '2026-01-01');
       const fiveDayArr = state.fiveDays[shiftIdx] || DEFAULT_FIVE_DAYS[shiftIdx];
       const fullCycle = buildFull15DayCycle(fiveDayArr);
@@ -1811,13 +1391,7 @@
       return fullCycle[idx] || '-';
     }
 
-    function getColumnLabel(sIdx) {
-      if (sIdx < 5) return `Зміна ${SHIFTS[sIdx]}`;
-      const title = (state.customCol && state.customCol.title) ? state.customCol.title.trim() : 'Я';
-      return `Свій графік (${title || 'Я'})`;
-    }
-
-    // --- Exam Alerts Scanner ---
+    // --- Exam Alerts Scanner (Show ONLY when exams exist within 14 days) ---
     function getUpcomingExamAlerts() {
       const alerts = [];
       Object.entries(state.exams || {}).forEach(([iso, examList]) => {
@@ -1876,29 +1450,23 @@
       renderSchedule(iso);
     }
 
-    // --- Shift Column Headers ---
+    // --- Shift Column Header Notes ---
     function renderShiftColumnHeaders() {
-      const headerGrid = document.getElementById('gridHeader');
-      const totalCols = (state.customCol && state.customCol.enabled) ? 6 : 5;
-      let html = `<div>Дата</div>`;
-
-      for (let i = 0; i < totalCols; i++) {
-        const title = i < 5 ? SHIFTS[i] : ((state.customCol.title || 'Я').trim() || 'Я');
+      for (let i = 0; i < 5; i++) {
+        const el = document.getElementById(`colHdr_${i}`);
         const note = (state.shiftNotes[i] || '').trim();
         if (note) {
-          const firstLine = note.split('
-')[0];
-          html += `<div class="shift-col-hdr" onclick="haptic('light'); openShiftNoteModal(${i})"><span>${escapeHtml(title)}</span><span class="shift-col-sub">${escapeHtml(firstLine)}</span><span class="shift-col-dot"></span></div>`;
+          const firstLine = note.split('\n')[0];
+          el.innerHTML = `<span>${SHIFTS[i]}</span><span class="shift-col-sub">${escapeHtml(firstLine)}</span><span class="shift-col-dot"></span>`;
         } else {
-          html += `<div class="shift-col-hdr" onclick="haptic('light'); openShiftNoteModal(${i})"><span>${escapeHtml(title)}</span></div>`;
+          el.innerHTML = `<span>${SHIFTS[i]}</span>`;
         }
       }
-      headerGrid.innerHTML = html;
     }
 
     function openShiftNoteModal(sIdx) {
       editingShiftIdx = sIdx;
-      document.getElementById('shiftNoteTitle').textContent = `Примітка: ${getColumnLabel(sIdx)}`;
+      document.getElementById('shiftNoteTitle').textContent = `Примітка для Зміни ${SHIFTS[sIdx]}`;
       document.getElementById('shiftNoteTextarea').value = state.shiftNotes[sIdx] || '';
       openModal('shiftNoteModal');
     }
@@ -1918,9 +1486,10 @@
       closeModal('shiftNoteModal');
     }
 
-    // --- Short Tap Selection, Double-Tap & Long Press Handling ---
+    // --- Short Tap Selection & Long Press Handling ---
     function selectRowDay(iso) {
       selectedDateStr = iso;
+      haptic('light');
       const container = document.getElementById('scheduleScroll');
       if (!container) return;
       container.querySelectorAll('.day-row.selected').forEach((el) => el.classList.remove('selected'));
@@ -1934,9 +1503,6 @@
     let pressStartY = 0;
     let pressingEl = null;
 
-    let lastTapTime = 0;
-    let lastTapKey = '';
-
     function clearPressState() {
       if (pressTimer) {
         clearTimeout(pressTimer);
@@ -1948,26 +1514,11 @@
       }
     }
 
-    function triggerCellAction(iso, dateCell, shiftCell) {
-      clearBrowserSelection();
-      haptic('long');
-      selectRowDay(iso);
-
-      if (dateCell) {
-        openDayModal(iso);
-      } else if (shiftCell) {
-        const sIdx = Number(shiftCell.dataset.sidx);
-        openCellModal(iso, sIdx);
-      }
-    }
-
     function bindScheduleTouchEvents() {
       const container = document.getElementById('scheduleScroll');
 
       container.addEventListener('pointerdown', (e) => {
         if (e.button !== undefined && e.button !== 0) return;
-        clearBrowserSelection();
-
         const dateCell = e.target.closest('.date-cell');
         const shiftCell = e.target.closest('.shift-cell');
         const targetCell = dateCell || shiftCell;
@@ -1986,9 +1537,16 @@
         pressTimer = setTimeout(() => {
           pressTriggered = true;
           clearPressState();
-          lastTapTime = 0;
-          triggerCellAction(iso, dateCell, shiftCell);
-        }, 400);
+          haptic('long');
+          selectRowDay(iso);
+
+          if (dateCell) {
+            openDayModal(iso);
+          } else if (shiftCell) {
+            const sIdx = Number(shiftCell.dataset.sidx);
+            openCellModal(iso, sIdx);
+          }
+        }, 420);
       });
 
       container.addEventListener('pointermove', (e) => {
@@ -2001,52 +1559,28 @@
       container.addEventListener('pointerup', (e) => {
         const wasTimerActive = Boolean(pressTimer);
         clearPressState();
-        clearBrowserSelection();
-
         if (wasTimerActive && !pressTriggered) {
-          const dateCell = e.target.closest('.date-cell');
-          const shiftCell = e.target.closest('.shift-cell');
           const row = e.target.closest('.day-row');
-          if (!row || !row.dataset.date) return;
-
-          const iso = row.dataset.date;
-          const cellKey = dateCell ? `${iso}_date` : `${iso}_s_${shiftCell ? shiftCell.dataset.sidx : ''}`;
-          const now = Date.now();
-
-          if (cellKey === lastTapKey && (now - lastTapTime) < 330) {
-            // Double tap detected
-            lastTapTime = 0;
-            lastTapKey = '';
-            triggerCellAction(iso, dateCell, shiftCell);
-          } else {
-            // Single tap -> select row
-            lastTapTime = now;
-            lastTapKey = cellKey;
-            haptic('light');
-            selectRowDay(iso);
+          if (row && row.dataset.date) {
+            selectRowDay(row.dataset.date);
           }
         }
       });
 
       container.addEventListener('pointercancel', clearPressState);
       container.addEventListener('contextmenu', (e) => {
-        if (e.target.closest('.day-row')) {
-          e.preventDefault();
-          clearBrowserSelection();
-        }
+        if (e.target.closest('.day-row')) e.preventDefault();
       });
     }
 
     // --- Render Schedule ---
     function renderSchedule(scrollTargetDateStr = null) {
-      applyCustomColLayout();
       renderShiftColumnHeaders();
       updateExamAlertsUI();
 
       const container = document.getElementById('scheduleScroll');
       const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
       const todayStr = toISODate(today);
-      const totalCols = (state.customCol && state.customCol.enabled) ? 6 : 5;
 
       document.getElementById('monthYearBtn').textContent = `${pad2(viewMonth + 1)}.${viewYear}`;
 
@@ -2089,22 +1623,18 @@
         }
         html += `</div>`;
 
-        // Shift columns (5 standard + optional 6th custom)
-        for (let sIdx = 0; sIdx < totalCols; sIdx++) {
+        // 5 Shift columns
+        for (let sIdx = 0; sIdx < 5; sIdx++) {
           const cellKey = `${iso}_${sIdx}`;
           const cellMeta = state.cells[cellKey];
           const val = (cellMeta && cellMeta.override) ? cellMeta.override : getScheduledShift(dObj, sIdx);
-          const pillClass =
-            val === '1' ? 's-1' :
-            val === '2' ? 's-2' :
-            val === '3' ? 's-3' :
-            val === 'Р' ? 's-r' : 's-off';
+          const pillClass = val === '1' ? 's-1' : val === '2' ? 's-2' : val === '3' ? 's-3' : 's-off';
 
           html += `<div class="shift-cell" data-sidx="${sIdx}">`;
           if (cellMeta && cellMeta.note) {
             html += `<span class="tag-note"></span>`;
           }
-          html += `<div class="shift-pill ${pillClass}">${escapeHtml(val)}</div>`;
+          html += `<div class="shift-pill ${pillClass}">${val}</div>`;
           if (cellMeta && cellMeta.extraD) {
             html += `<div class="cell-tags"><span class="tag-d">Д</span></div>`;
           }
@@ -2151,7 +1681,6 @@
 
     // --- Modals Utility ---
     function openModal(id) {
-      clearBrowserSelection();
       document.getElementById(id).classList.add('open');
     }
 
@@ -2173,7 +1702,7 @@
         note: existing.note || ''
       };
 
-      document.getElementById('cellModalTitle').textContent = `${getColumnLabel(sIdx)} — ${formatDisplayDate(iso)}`;
+      document.getElementById('cellModalTitle').textContent = `Зміна ${SHIFTS[sIdx]} — ${formatDisplayDate(iso)}`;
       document.getElementById('cellNoteInput').value = tempCellData.note;
       syncCellModalUI();
       openModal('cellModal');
@@ -2354,24 +1883,9 @@
       renderSchedule();
     }
 
-    // --- Pattern & Custom Column Settings ---
-    function toggleCustomColCfgUI() {
-      const enabled = document.getElementById('cfgCustomColEnabled').checked;
-      document.getElementById('customColCfgFields').style.display = enabled ? 'flex' : 'none';
-    }
-
+    // --- Pattern Settings ---
     function openPatternModal() {
       document.getElementById('cfgAnchorDate').value = state.anchorDate || '2026-01-01';
-
-      const cc = state.customCol || { enabled: false, title: 'Я', week: [...DEFAULT_CUSTOM_WEEK] };
-      document.getElementById('cfgCustomColEnabled').checked = Boolean(cc.enabled);
-      document.getElementById('cfgCustomColTitle').value = cc.title || 'Я';
-      for (let d = 0; d < 7; d++) {
-        const sel = document.getElementById(`cw_${d}`);
-        if (sel) sel.value = cc.week[d] || DEFAULT_CUSTOM_WEEK[d];
-      }
-      toggleCustomColCfgUI();
-
       renderShiftsConfigUI(state.fiveDays);
       openModal('patternModal');
     }
@@ -2436,11 +1950,6 @@
 
     function resetDefaultPattern() {
       document.getElementById('cfgAnchorDate').value = '2026-01-01';
-      document.getElementById('cfgCustomColTitle').value = 'Я';
-      for (let d = 0; d < 7; d++) {
-        const sel = document.getElementById(`cw_${d}`);
-        if (sel) sel.value = DEFAULT_CUSTOM_WEEK[d];
-      }
       renderShiftsConfigUI(DEFAULT_FIVE_DAYS);
     }
 
@@ -2454,22 +1963,8 @@
         }
         nextFiveDays.push(row);
       }
-
-      const customEnabled = document.getElementById('cfgCustomColEnabled').checked;
-      const customTitle = document.getElementById('cfgCustomColTitle').value.trim() || 'Я';
-      const customWeek = [];
-      for (let d = 0; d < 7; d++) {
-        customWeek.push(document.getElementById(`cw_${d}`).value);
-      }
-
       state.anchorDate = anchor;
       state.fiveDays = nextFiveDays;
-      state.customCol = {
-        enabled: customEnabled,
-        title: customTitle,
-        week: customWeek
-      };
-
       saveState();
       closeModal('patternModal');
       renderSchedule();
@@ -2713,11 +2208,6 @@
     loadState();
     bindScheduleTouchEvents();
     renderSchedule(selectedDateStr);
-    checkRemoteVersion(false);
-
-    if (!state.tourDone) {
-      setTimeout(() => startTour(), 350);
-    }
   </script>
 </body>
 </html>
