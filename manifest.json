@@ -1,12 +1,12 @@
 {
   "name": "Графік змін",
   "short_name": "Графік змін",
-  "description": "Автономний графік змін (А, Б, В, Г, Д), події, іспити та дні народження",
+  "description": "Автономний графік змін (А, Б, В, Г, Д + власний графік), події, іспити та дні народження",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#1e222b",
+  "background_color": "#232834",
   "theme_color": "#232834",
   "icons": [
     {
