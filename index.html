@@ -450,12 +450,13 @@
     }
 
     .s-v {
-      background: transparent;
+      background: #fee2e2;
       color: #dc2626;
     }
 
     body.dark .s-v {
-      color: #f87171;
+      background: rgba(239, 68, 68, 0.22);
+      color: #fca5a5;
     }
 
     @media (min-width: 600px) {
@@ -1301,16 +1302,19 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
             <div class="field-group">
               <div class="field-label">Початок</div>
-              <input id="vacFrom" type="date" onchange="syncVacTo()" />
+              <input id="vacFrom" type="date" onchange="onVacFromChange()" />
             </div>
             <div class="field-group">
               <div class="field-label">Кінець</div>
-              <input id="vacTo" type="date" />
+              <input id="vacTo" type="date" onchange="onVacToChange()" />
             </div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Кількість днів (кінець порахується сам)</div>
+            <input id="vacDays" type="number" min="1" max="366" inputmode="numeric" placeholder="Наприклад: 14" oninput="onVacDaysChange()" />
           </div>
           <button class="btn btn-primary" onclick="haptic('success'); addVacation()">Додати відпустку</button>
         </div>
-        <div class="hint-box">У графіку на ці дні для вибраної зміни буде червона літера <b style="color:#dc2626;">В</b>. Ручна правка клітинки має пріоритет над відпусткою.</div>
         <div class="field-label" id="vacCountLabel">Відпусток: 0</div>
         <div id="vacList" style="display:flex;flex-direction:column;gap:5px;max-height:240px;overflow-y:auto;"></div>
       </div>
@@ -2601,14 +2605,47 @@
       sel.innerHTML = opts;
       document.getElementById('vacFrom').value = '';
       document.getElementById('vacTo').value = '';
+      document.getElementById('vacDays').value = '';
       renderVacationsList();
       openModal('vacationsModal');
     }
 
-    function syncVacTo() {
+    function addDaysISO(iso, n) {
+      const d = parseISODate(iso);
+      d.setDate(d.getDate() + n);
+      return toISODate(d);
+    }
+
+    function onVacFromChange() {
       const from = document.getElementById('vacFrom').value;
       const toEl = document.getElementById('vacTo');
-      if (from && (!toEl.value || toEl.value < from)) toEl.value = from;
+      const daysEl = document.getElementById('vacDays');
+      if (!from) return;
+      const n = parseInt(daysEl.value, 10);
+      if (n >= 1) {
+        toEl.value = addDaysISO(from, n - 1);
+      } else if (!toEl.value || toEl.value < from) {
+        toEl.value = from;
+        daysEl.value = 1;
+      } else {
+        daysEl.value = diffDays(parseISODate(from), parseISODate(toEl.value)) + 1;
+      }
+    }
+
+    function onVacToChange() {
+      const from = document.getElementById('vacFrom').value;
+      const to = document.getElementById('vacTo').value;
+      if (from && to && to >= from) {
+        document.getElementById('vacDays').value = diffDays(parseISODate(from), parseISODate(to)) + 1;
+      }
+    }
+
+    function onVacDaysChange() {
+      const from = document.getElementById('vacFrom').value;
+      const n = parseInt(document.getElementById('vacDays').value, 10);
+      if (from && n >= 1) {
+        document.getElementById('vacTo').value = addDaysISO(from, n - 1);
+      }
     }
 
     function addVacation() {
@@ -2628,6 +2665,7 @@
       saveState();
       document.getElementById('vacFrom').value = '';
       document.getElementById('vacTo').value = '';
+      document.getElementById('vacDays').value = '';
       renderVacationsList();
       renderSchedule();
     }
