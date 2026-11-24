@@ -49,6 +49,8 @@
       --top-bar-h: 54px;
       --thead-h: 42px;
       --bottom-bar-h: 58px;
+      --app-w: 560px;
+      --side: max(0px, calc((100vw - var(--app-w)) / 2));
       --grid-cols: 78px repeat(5, 1fr);
     }
 
@@ -101,7 +103,7 @@
     html, body {
       height: 100%;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial, sans-serif;
-      background: var(--header-bg);
+      background: var(--bg);
       color: var(--text);
       overflow: hidden;
     }
@@ -115,8 +117,8 @@
     .app-header {
       position: fixed;
       top: 0;
-      left: 0;
-      right: 0;
+      left: var(--side);
+      right: var(--side);
       height: calc(var(--top-bar-h) + env(safe-area-inset-top));
       padding-top: env(safe-area-inset-top);
       background: var(--header-bg);
@@ -210,8 +212,8 @@
     .grid-header {
       position: fixed;
       top: calc(var(--top-bar-h) + env(safe-area-inset-top));
-      left: 0;
-      right: 0;
+      left: var(--side);
+      right: var(--side);
       height: var(--thead-h);
       background: var(--thead-bg);
       color: var(--thead-text);
@@ -275,8 +277,8 @@
       position: fixed;
       top: calc(var(--top-bar-h) + var(--thead-h) + env(safe-area-inset-top));
       bottom: calc(var(--bottom-bar-h) + env(safe-area-inset-bottom));
-      left: 0;
-      right: 0;
+      left: var(--side);
+      right: var(--side);
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       background: var(--surface);
@@ -447,6 +449,21 @@
       color: var(--soff-text);
     }
 
+    .s-v {
+      background: transparent;
+      color: #dc2626;
+    }
+
+    body.dark .s-v {
+      color: #f87171;
+    }
+
+    @media (min-width: 600px) {
+      .app-header, .grid-header, .schedule-scroll, .bottom-nav {
+        box-shadow: 0 0 0 1px var(--border);
+      }
+    }
+
     .s-d {
       background: #fee2e2;
       color: #dc2626;
@@ -473,8 +490,8 @@
     .bottom-nav {
       position: fixed;
       bottom: 0;
-      left: 0;
-      right: 0;
+      left: var(--side);
+      right: var(--side);
       height: calc(var(--bottom-bar-h) + env(safe-area-inset-bottom));
       padding-bottom: env(safe-area-inset-bottom);
       background: var(--header-bg);
@@ -858,8 +875,8 @@
     .update-banner {
       position: fixed;
       top: calc(var(--top-bar-h) + env(safe-area-inset-top) + 6px);
-      left: 10px;
-      right: 10px;
+      left: calc(var(--side) + 10px);
+      right: calc(var(--side) + 10px);
       background: #1d4ed8;
       color: #ffffff;
       border-radius: 12px;
@@ -1037,6 +1054,10 @@
           <span>🎂 Дні народження</span>
           <span>›</span>
         </button>
+        <button class="menu-item" onclick="haptic('light'); closeModal('menuModal'); openVacationsModal();">
+          <span>🏖 Відпустки</span>
+          <span>›</span>
+        </button>
         <button class="menu-item" onclick="haptic('light'); exportBackup()">
           <span>💾 Експорт резервної копії (JSON)</span>
           <span>›</span>
@@ -1047,7 +1068,7 @@
         </button>
         <input id="backupInput" type="file" accept=".json" style="display:none" onchange="importBackup(event)" />
         <div class="version-footer" style="display:flex;align-items:center;justify-content:center;gap:8px;padding-top:6px;">
-          <span>Версія додатку: <b id="updateCheckStatus">v1.8.5</b></span>
+          <span>Версія додатку: <b id="updateCheckStatus">v1.8.6</b></span>
           <button type="button" title="Оновити сторінку / перевірити оновлення" onclick="haptic('light'); forceRefreshApp()" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--surface-2);color:var(--text);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;line-height:1;">↻</button>
         </div>
       </div>
@@ -1263,6 +1284,42 @@
     </div>
   </div>
 
+  <!-- Vacations Modal -->
+  <div id="vacationsModal" class="modal-backdrop" onclick="backdropClose(event, 'vacationsModal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span>🏖 Відпустки</span>
+        <button class="modal-close" onclick="haptic('light'); closeModal('vacationsModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="shift-seq-card">
+          <div class="field-label">➕ Додати відпустку</div>
+          <div class="field-group">
+            <div class="field-label">Зміна</div>
+            <select id="vacShift"></select>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <div class="field-group">
+              <div class="field-label">Початок</div>
+              <input id="vacFrom" type="date" onchange="syncVacTo()" />
+            </div>
+            <div class="field-group">
+              <div class="field-label">Кінець</div>
+              <input id="vacTo" type="date" />
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="haptic('success'); addVacation()">Додати відпустку</button>
+        </div>
+        <div class="hint-box">У графіку на ці дні для вибраної зміни буде червона літера <b style="color:#dc2626;">В</b>. Ручна правка клітинки має пріоритет над відпусткою.</div>
+        <div class="field-label" id="vacCountLabel">Відпусток: 0</div>
+        <div id="vacList" style="display:flex;flex-direction:column;gap:5px;max-height:240px;overflow-y:auto;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="haptic('light'); closeModal('vacationsModal')">Закрити</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Birthdays Modal -->
   <div id="birthdaysModal" class="modal-backdrop" onclick="backdropClose(event, 'birthdaysModal')">
     <div class="modal-card">
@@ -1310,7 +1367,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'v1.8.5';
+    const APP_VERSION = 'v1.8.6';
     const SHIFTS = ['А', 'Б', 'В', 'Г', 'Д'];
     const EXAM_TYPES = ['ОП', 'ПБ', 'ПТЕ', 'НПАОП', 'РБ', 'ПНЯРБ'];
     const DOW_UA = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
@@ -1325,7 +1382,7 @@
       ['2', '2', '-', '-', '1']  // Д
     ];
 
-    const APP_BUILD = 185;
+    const APP_BUILD = 186;
     const DEFAULT_CUSTOM_WEEK = ['-', 'Р', 'Р', 'Р', 'Р', 'Р', '-'];
     const STORAGE_KEY = 'shift_schedule_pwa_v6';
 
@@ -1343,6 +1400,7 @@
       cells: {},      // "YYYY-MM-DD_0..5": { override, extraD, note }
       exams: {},      // "YYYY-MM-DD": [ "ОП", "ПБ" ]
       events: {},     // "YYYY-MM-DD": [ "Текст події" ]
+      vacations: [],  // [ { id, shift: 0..5, from: "YYYY-MM-DD", to: "YYYY-MM-DD" } ]
       birthdays: []   // [ { mmdd: "05-14", name: "...", position: "...", shift: "А" } ]
     };
 
@@ -1685,6 +1743,13 @@
       if (!Array.isArray(state.birthdays)) {
         state.birthdays = [];
       }
+      if (!Array.isArray(state.vacations)) {
+        state.vacations = [];
+      }
+      state.vacations = state.vacations.filter((v) =>
+        v && Number.isInteger(v.shift) && v.shift >= 0 && v.shift <= 5 &&
+        typeof v.from === 'string' && typeof v.to === 'string'
+      );
 
       Object.keys(state.cells).forEach((k) => {
         const c = state.cells[k];
@@ -1797,6 +1862,15 @@
       const delta = diffDays(anchor, dateObj);
       const idx = ((delta % len) + len) % len;
       return fullCycle[idx] || '-';
+    }
+
+    function isOnVacation(iso, sIdx) {
+      const list = state.vacations || [];
+      for (let i = 0; i < list.length; i++) {
+        const v = list[i];
+        if (v.shift === sIdx && iso >= v.from && iso <= v.to) return true;
+      }
+      return false;
     }
 
     function getColumnLabel(sIdx) {
@@ -2125,13 +2199,16 @@
           const cellMeta = state.cells[cellKey];
           const val = (cellMeta && cellMeta.extraD)
             ? 'Д'
-            : ((cellMeta && cellMeta.override) ? cellMeta.override : getScheduledShift(dObj, sIdx));
+            : ((cellMeta && cellMeta.override)
+              ? cellMeta.override
+              : (isOnVacation(iso, sIdx) ? 'В' : getScheduledShift(dObj, sIdx)));
           const pillClass =
             val === '1' ? 's-1' :
             val === '2' ? 's-2' :
             val === '3' ? 's-3' :
             val === 'Р' ? 's-r' :
-            val === 'Д' ? 's-d' : 's-off';
+            val === 'Д' ? 's-d' :
+            val === 'В' ? 's-v' : 's-off';
 
           html += `<div class="shift-cell" data-sidx="${sIdx}">`;
           if (cellMeta && cellMeta.note) {
@@ -2145,6 +2222,7 @@
       }
 
       container.innerHTML = html;
+      syncScrollbarWidth();
 
       if (scrollTargetDateStr) {
         requestAnimationFrame(() => {
@@ -2157,6 +2235,16 @@
         });
       }
     }
+
+    // Компенсація смуги прокрутки (ПК): щоб заголовки збігалися з колонками
+    function syncScrollbarWidth() {
+      const c = document.getElementById('scheduleScroll');
+      const h = document.getElementById('gridHeader');
+      if (!c || !h) return;
+      const w = Math.max(0, c.offsetWidth - c.clientWidth);
+      h.style.paddingRight = w + 'px';
+    }
+    window.addEventListener('resize', syncScrollbarWidth);
 
     // --- Bottom Bar Month Navigation ---
     function shiftMonth(delta) {
@@ -2500,6 +2588,73 @@
       saveState();
       closeModal('patternModal');
       renderSchedule();
+    }
+
+    // --- Vacations ---
+    function openVacationsModal() {
+      const sel = document.getElementById('vacShift');
+      const total = (state.customCol && state.customCol.enabled) ? 6 : 5;
+      let opts = '';
+      for (let i = 0; i < total; i++) {
+        opts += `<option value="${i}">${escapeHtml(getColumnLabel(i))}</option>`;
+      }
+      sel.innerHTML = opts;
+      document.getElementById('vacFrom').value = '';
+      document.getElementById('vacTo').value = '';
+      renderVacationsList();
+      openModal('vacationsModal');
+    }
+
+    function syncVacTo() {
+      const from = document.getElementById('vacFrom').value;
+      const toEl = document.getElementById('vacTo');
+      if (from && (!toEl.value || toEl.value < from)) toEl.value = from;
+    }
+
+    function addVacation() {
+      const shift = Number(document.getElementById('vacShift').value);
+      const from = document.getElementById('vacFrom').value;
+      const to = document.getElementById('vacTo').value || from;
+      if (!from) {
+        alert('Вкажіть дату початку відпустки.');
+        return;
+      }
+      if (to < from) {
+        alert('Дата кінця не може бути раніше за дату початку.');
+        return;
+      }
+      state.vacations.push({ id: Date.now(), shift, from, to });
+      state.vacations.sort((a, b) => a.from.localeCompare(b.from));
+      saveState();
+      document.getElementById('vacFrom').value = '';
+      document.getElementById('vacTo').value = '';
+      renderVacationsList();
+      renderSchedule();
+    }
+
+    function removeVacation(id) {
+      state.vacations = state.vacations.filter((v) => v.id !== id);
+      saveState();
+      renderVacationsList();
+      renderSchedule();
+    }
+
+    function renderVacationsList() {
+      document.getElementById('vacCountLabel').textContent = `Відпусток: ${state.vacations.length}`;
+      const list = document.getElementById('vacList');
+      if (!state.vacations.length) {
+        list.innerHTML = `<div style="font-size:13px;color:var(--text-muted);">Список порожній</div>`;
+        return;
+      }
+      list.innerHTML = state.vacations
+        .map((v) => {
+          const days = diffDays(parseISODate(v.from), parseISODate(v.to)) + 1;
+          return `<div class="list-item">
+            <span><b style="color:#dc2626;">В</b> ${escapeHtml(getColumnLabel(v.shift))}<br/><span style="color:var(--text-muted)">${formatDisplayDate(v.from)} – ${formatDisplayDate(v.to)} (${days} дн.)</span></span>
+            <button class="btn btn-danger" style="padding:3px 7px;font-size:11px;" onclick="haptic('light'); removeVacation(${v.id})">✕</button>
+          </div>`;
+        })
+        .join('');
     }
 
     // --- Birthdays (Manual + Excel Import) ---
